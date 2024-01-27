@@ -1,13 +1,19 @@
 package com.ssginc.secretgarden.domain.member.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "member")
 public class Member {
     @Id
@@ -25,4 +31,5 @@ public class Member {
     private LocalDate birthDate;
 
     private String name;
+
 }
