@@ -40,4 +40,8 @@ public class MemberService {
         Member member = memberRepository.findByBlossomId(blossomId);
         return member==null;
     }
+
+    public Member getMember(String blossomId){
+        return memberRepository.findByBlossomId(blossomId);
+    }
 }

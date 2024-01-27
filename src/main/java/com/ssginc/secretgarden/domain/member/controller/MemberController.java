@@ -2,6 +2,7 @@ package com.ssginc.secretgarden.domain.member.controller;
 
 import com.ssginc.secretgarden.domain.member.dto.request.LoginRequestDto;
 import com.ssginc.secretgarden.domain.member.dto.request.SignupRequestDto;
+import com.ssginc.secretgarden.domain.member.entity.Member;
 import com.ssginc.secretgarden.domain.member.service.MemberService;
 import com.ssginc.secretgarden.global.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class MemberController {
+
     private final MemberService memberService;
     private final JwtUtil jwtUtil;
 
@@ -35,10 +38,14 @@ public class MemberController {
         String blossomId = loginRequestDto.getBlossomId();
         String password = loginRequestDto.getPassword();
         if (memberService.login(blossomId, password)) {
-            String token = jwtUtil.generateToken(blossomId);
+            String token = "Bearer " + jwtUtil.generateToken(memberService.getMember(blossomId));
             return new ResponseEntity<>(token, HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<>("ID 또는 비밀번호가 잘못 되었습니다.", HttpStatus.UNAUTHORIZED);
     }
 
+    @GetMapping("/get-member-id")
+    public Integer getMemberId(@RequestParam(value="token") String token){
+        return jwtUtil.getMemberIdByToken(token);
+    }
 }
