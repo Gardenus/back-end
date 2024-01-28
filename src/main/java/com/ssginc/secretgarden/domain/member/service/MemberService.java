@@ -1,15 +1,12 @@
 package com.ssginc.secretgarden.domain.member.service;
 
-import com.ssginc.secretgarden.domain.member.dto.request.SignupRequestDto;
+import com.ssginc.secretgarden.domain.member.dto.request.SignupRequest;
 import com.ssginc.secretgarden.domain.member.entity.Company;
 import com.ssginc.secretgarden.domain.member.entity.Member;
 import com.ssginc.secretgarden.domain.member.repository.CompanyRepository;
 import com.ssginc.secretgarden.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +19,7 @@ public class MemberService {
         return memberRepository.findByBlossomIdAndPassword(blossomId, password).isPresent();
     }
 
-    public void signup(SignupRequestDto signupRequestDto) {
+    public void signup(SignupRequest signupRequestDto) {
         Integer companyId = signupRequestDto.getCompanyId();
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 계열사 id입니다."));
