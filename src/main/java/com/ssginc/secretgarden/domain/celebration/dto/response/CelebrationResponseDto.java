@@ -11,7 +11,6 @@ import lombok.*;
 public class CelebrationResponseDto {
 
     private Integer id;
-    private Integer memberId;
 
     public static CelebrationResponseDto toDto(Celebration celebration){
         return CelebrationResponseDto.builder()
