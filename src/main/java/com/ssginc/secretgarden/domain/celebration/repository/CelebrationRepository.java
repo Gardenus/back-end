@@ -1,4 +1,9 @@
 package com.ssginc.secretgarden.domain.celebration.repository;
 
-public class CelebrationRepository {
+import com.ssginc.secretgarden.domain.celebration.entity.Celebration;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface CelebrationRepository extends JpaRepository<Celebration, Long> {
 }
