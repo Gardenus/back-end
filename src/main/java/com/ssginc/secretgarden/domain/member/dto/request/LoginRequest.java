@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
-public class LoginRequestDto {
+public class LoginRequest {
     @NotEmpty
     private String blossomId;
     @NotEmpty
