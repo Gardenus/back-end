@@ -3,11 +3,16 @@ package com.ssginc.secretgarden.domain.compliment.service;
 import com.ssginc.secretgarden.domain.compliment.dto.request.WriteComplimentRequest;
 import com.ssginc.secretgarden.domain.compliment.entity.Compliment;
 import com.ssginc.secretgarden.domain.compliment.repository.ComplimentRepository;
+import com.ssginc.secretgarden.domain.member.entity.Company;
 import com.ssginc.secretgarden.domain.member.entity.Member;
 import com.ssginc.secretgarden.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -44,4 +49,10 @@ public class ComplimentService {
         return complimentRepository.findByCategoryOrderByCreatedAtDesc("business");
     }
 
+    public List<Company> getComplimentRanking() {
+        int currentMonth = LocalDateTime.now().getMonthValue();
+        List<Company> companyRanking = new ArrayList<>();
+        System.out.println(currentMonth);
+        return companyRanking;
+    }
 }

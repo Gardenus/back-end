@@ -15,8 +15,10 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final CompanyRepository companyRepository;
 
-    public Boolean login(String blossomId, String password){
-        return memberRepository.findByBlossomIdAndPassword(blossomId, password).isPresent();
+    public Member login(String blossomId, String password){
+        Member member =  memberRepository.findByBlossomIdAndPassword(blossomId, password)
+                        .orElseThrow(()->new RuntimeException("ID 또는 비밀번호가 잘못되었습니다."));
+        return member;
     }
 
     public void signup(SignupRequest signupRequestDto) {

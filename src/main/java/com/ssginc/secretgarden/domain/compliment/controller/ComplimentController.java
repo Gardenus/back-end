@@ -3,6 +3,7 @@ package com.ssginc.secretgarden.domain.compliment.controller;
 import com.ssginc.secretgarden.domain.compliment.dto.request.WriteComplimentRequest;
 import com.ssginc.secretgarden.domain.compliment.entity.Compliment;
 import com.ssginc.secretgarden.domain.compliment.service.ComplimentService;
+import com.ssginc.secretgarden.domain.member.entity.Company;
 import com.ssginc.secretgarden.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,12 @@ public class ComplimentController {
     public ResponseEntity<?> getComplimentPreview(){
         List<Compliment> complimentPreview = complimentService.getComplimentPreview();
         return new ResponseEntity<>(complimentPreview, HttpStatus.OK);
+    }
+
+    @GetMapping("/ranking")
+    public ResponseEntity<?> getComplimentRanking(){
+        List<Company> companyRanking = complimentService.getComplimentRanking();
+        return new ResponseEntity<>(companyRanking, HttpStatus.OK);
     }
 
 

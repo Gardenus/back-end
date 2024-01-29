@@ -2,6 +2,8 @@ package com.ssginc.secretgarden.domain.member.controller;
 
 import com.ssginc.secretgarden.domain.member.dto.request.LoginRequest;
 import com.ssginc.secretgarden.domain.member.dto.request.SignupRequest;
+import com.ssginc.secretgarden.domain.member.dto.response.LoginResponse;
+import com.ssginc.secretgarden.domain.member.entity.Member;
 import com.ssginc.secretgarden.domain.member.service.MemberService;
 import com.ssginc.secretgarden.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -29,18 +31,20 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequestDto) {
-        String blossomId = loginRequestDto.getBlossomId();
-        String password = loginRequestDto.getPassword();
-        if (memberService.login(blossomId, password)) {
-            String token = "Bearer " + jwtUtil.generateToken(memberService.getMember(blossomId));
-            return new ResponseEntity<>(token, HttpStatus.ACCEPTED);
-        }
-        return new ResponseEntity<>("ID 또는 비밀번호가 잘못 되었습니다.", HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        String blossomId = loginRequest.getBlossomId();
+        String password = loginRequest.getPassword();
+        Member member = memberService.login(blossomId, password);
+        String token = jwtUtil.generateToken(memberService.getMember(blossomId));
+        LoginResponse loginResponse = LoginResponse.builder()
+                            .blossomId(member.getBlossomId())
+                .companyName(member.getCompany().getName())
+                .companyId(member.getCompany().getId())
+                .memberId(member.getId())
+                .name(member.getName())
+                .token(token)
+                .build();
+        return new ResponseEntity<>(loginResponse, HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/get-member-id")
-    public Integer getMemberId(@RequestParam(value="token") String token){
-        return jwtUtil.getMemberIdByToken(token);
-    }
 }
