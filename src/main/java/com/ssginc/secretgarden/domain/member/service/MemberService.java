@@ -15,9 +15,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final CompanyRepository companyRepository;
 
-    public Member login(String blossomId, String password){
-        Member member =  memberRepository.findByBlossomIdAndPassword(blossomId, password)
-                        .orElseThrow(()->new RuntimeException("ID 또는 비밀번호가 잘못되었습니다."));
+    public Member login(String blossomId, String password) {
+        Member member = memberRepository.findByBlossomIdAndPassword(blossomId, password)
+                .orElseThrow(() -> new RuntimeException("ID 또는 비밀번호가 잘못되었습니다."));
         return member;
     }
 
@@ -37,10 +37,16 @@ public class MemberService {
 
     public Boolean idCheck(String blossomId) {
         Member member = memberRepository.findByBlossomId(blossomId);
-        return member==null;
+        return member == null;
     }
 
-    public Member getMember(String blossomId){
-        return memberRepository.findByBlossomId(blossomId);
+    public Member getMemberByMemberId(Integer memberId) {
+        return memberRepository.findById(memberId).orElseThrow(
+                ()-> new RuntimeException("존재하지 않는 사용자 id입니다.")
+        );
+    }
+
+    public Member getMemberByBlossomId(String blossom) {
+        return memberRepository.findByBlossomId(blossom);
     }
 }
