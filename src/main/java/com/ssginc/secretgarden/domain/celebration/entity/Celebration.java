@@ -27,6 +27,7 @@ public class Celebration {
     private String content;
     private String category;
     private Boolean isSecret;
+    private String nickname;
 
     @CreatedDate
     private LocalDateTime createdAt;
