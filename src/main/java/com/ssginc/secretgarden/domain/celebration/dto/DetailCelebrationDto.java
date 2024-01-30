@@ -16,21 +16,23 @@ public class DetailCelebrationDto {
     private Integer id;
     private String writer;
     private String company;
+    private Boolean isSecret;
+    private String nickname;
     private String title;
     private String content;
     private String category;
-    private Boolean isSecret;
     private LocalDateTime createdAt;
 
-    public static DetailCelebrationDto toDto(Celebration celebration, Member member){
+    public static DetailCelebrationDto toDto(Celebration celebration){
         return DetailCelebrationDto.builder()
                 .id(celebration.getId())
-                .writer(member.getName())
-                .company(member.getCompany().getName())
+                .writer(celebration.getMember().getName())
+                .company(celebration.getMember().getCompany().getName())
+                .isSecret(celebration.getIsSecret())
                 .title(celebration.getTitle())
+                .nickname(celebration.getNickname())
                 .content(celebration.getContent())
                 .category(celebration.getCategory())
-                .isSecret(celebration.getIsSecret())
                 .createdAt(celebration.getCreatedAt())
                 .build();
     }
