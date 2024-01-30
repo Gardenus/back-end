@@ -1,9 +1,12 @@
 package com.ssginc.secretgarden.domain.member.controller;
 
+import com.ssginc.secretgarden.domain.celebration.entity.Celebration;
+import com.ssginc.secretgarden.domain.celebration.service.CelebrationService;
 import com.ssginc.secretgarden.domain.compliment.entity.Compliment;
 import com.ssginc.secretgarden.domain.compliment.service.ComplimentService;
 import com.ssginc.secretgarden.domain.member.dto.request.LoginRequest;
 import com.ssginc.secretgarden.domain.member.dto.request.SignupRequest;
+import com.ssginc.secretgarden.domain.member.dto.response.CelebrationResponse;
 import com.ssginc.secretgarden.domain.member.dto.response.ComplimentResponse;
 import com.ssginc.secretgarden.domain.member.dto.response.LoginResponse;
 import com.ssginc.secretgarden.domain.member.dto.response.MemberResponse;
@@ -26,6 +29,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final ComplimentService complimentService;
+    private final CelebrationService celebrationService;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/signup")
@@ -101,9 +105,21 @@ public class MemberController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-//    @GetMapping("/celebration/send/{memberId}")
-//    public ResponseEntity<?> getMySentCelebration(@PathVariable("memberId") Integer integer){
-//
-//    }
+    @GetMapping("/celebration/send/{memberId}")
+    public ResponseEntity<?> getMySentCelebration(@PathVariable("memberId") Integer memberId){
+        List<Celebration> celebrationList = celebrationService.getSentCelebration(memberId);
+        List<CelebrationResponse> response = celebrationList.stream()
+                .map(celebration ->
+                        {
+                            return CelebrationResponse.builder()
+                                    .celebrationId(celebration.getId())
+                                    .title(celebration.getTitle())
+                                    .nickname(celebration.getNickname())
+                                    .category(celebration.getCategory())
+                                    .build();
+                        }
+                ).collect(Collectors.toList());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
 }
