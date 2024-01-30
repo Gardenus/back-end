@@ -33,6 +33,13 @@ public class ComplimentController {
          return new ResponseEntity<>("칭찬글 작성이 완료되었습니다." , HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/{complimentId}")
+    public ResponseEntity<?> deleteCompliment(@PathVariable("complimentId") Integer complimentId){
+        complimentService.deleteCompliment(complimentId);
+        return new ResponseEntity<>("칭찬글이 삭제되었습니다.", HttpStatus.CREATED);
+    }
+
+
     @GetMapping("/all")
     public ResponseEntity<?> getAllComplimentList(){
         List<Compliment> allComplimentList = complimentService.getAllComplimentList();
@@ -58,17 +65,18 @@ public class ComplimentController {
 
     @GetMapping("/ranking")
     public ResponseEntity<?> getComplimentRanking(){
-        List<ComplimentRankingDto> tmp = complimentService.getComplimentRanking();
-        List<ComplimentRankingResponse> rankingResponse = tmp.stream()
+        List<ComplimentRankingDto> rankingDtoList = complimentService.getComplimentRanking();
+        List<ComplimentRankingResponse> rankingResponse = rankingDtoList.stream()
                 .map(complimentRankingDto -> {
-                    ComplimentRankingResponse rankingDto = new ComplimentRankingResponse();
+                    ComplimentRankingResponse complimentRankingResponse = new ComplimentRankingResponse();
                     Member member = memberService.getMemberByMemberId(complimentRankingDto.getMemberId());
-                    rankingDto.setCompanyId(member.getCompany().getId());
-                    rankingDto.setCompanyName(member.getCompany().getName());
-                    rankingDto.setName(member.getName());
-                    rankingDto.setCount(complimentRankingDto.getCount());
-                    rankingDto.setMemberId(complimentRankingDto.getMemberId());
-                    return rankingDto;
+                    complimentRankingResponse.setCompanyId(member.getCompany().getId());
+                    complimentRankingResponse.setCompanyName(member.getCompany().getName());
+                    complimentRankingResponse.setName(member.getName());
+                    complimentRankingResponse.setCount(complimentRankingDto.getCount());
+                    complimentRankingResponse.setRank(complimentRankingDto.getRank());
+                    complimentRankingResponse.setMemberId(complimentRankingDto.getMemberId());
+                    return complimentRankingResponse;
                 }).collect(Collectors.toList());
         return new ResponseEntity<>(rankingResponse, HttpStatus.OK);
     }

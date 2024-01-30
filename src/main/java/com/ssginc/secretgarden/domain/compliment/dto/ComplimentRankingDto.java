@@ -8,4 +8,5 @@ import lombok.Data;
 public class ComplimentRankingDto {
     private Integer memberId;
     private Long count;
+    private Long rank;
 }

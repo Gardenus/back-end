@@ -15,7 +15,7 @@ public interface ComplimentRepository extends JpaRepository<Compliment, Integer>
 
     List<Compliment> findByCategoryOrderByCreatedAtDesc(String daily);
 
-    @Query("SELECT new com.ssginc.secretgarden.domain.compliment.dto.ComplimentRankingDto(c.receiver_id, COUNT(c.id)) " +
+    @Query("SELECT new com.ssginc.secretgarden.domain.compliment.dto.ComplimentRankingDto(c.receiver_id, COUNT(c.id), RANK() OVER (ORDER BY COUNT(c.id) DESC)) " +
             "FROM Compliment c " +
             "where month(c.createdAt) = :currentMonth " +
             "group by c.receiver_id " +

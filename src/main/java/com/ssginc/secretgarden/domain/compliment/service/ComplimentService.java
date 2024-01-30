@@ -3,6 +3,7 @@ package com.ssginc.secretgarden.domain.compliment.service;
 import com.ssginc.secretgarden.domain.compliment.dto.ComplimentRankingDto;
 import com.ssginc.secretgarden.domain.compliment.dto.request.WriteComplimentRequest;
 import com.ssginc.secretgarden.domain.compliment.entity.Compliment;
+import com.ssginc.secretgarden.domain.compliment.exception.ComplimentNotFoundException;
 import com.ssginc.secretgarden.domain.compliment.repository.ComplimentRepository;
 import com.ssginc.secretgarden.domain.member.entity.Company;
 import com.ssginc.secretgarden.domain.member.entity.Member;
@@ -57,5 +58,11 @@ public class ComplimentService {
     public List<ComplimentRankingDto> getComplimentRanking() {
         int currentMonth = LocalDateTime.now().getMonthValue();
         return complimentRepository.findTop3Member(currentMonth);
+    }
+
+    public void deleteCompliment(Integer complimentId) {
+        Compliment compliment = complimentRepository.findById(complimentId)
+                .orElseThrow(()->new ComplimentNotFoundException("존재하지 않는 칭찬글 id 입니다."));
+        complimentRepository.delete(compliment);
     }
 }

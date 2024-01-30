@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ComplimentRankingResponse {
-    private Integer rank;
+    private Long rank;
     private Integer memberId;
     private String name;
     private Integer companyId;
