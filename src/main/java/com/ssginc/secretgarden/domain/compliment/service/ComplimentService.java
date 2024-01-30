@@ -1,7 +1,9 @@
 package com.ssginc.secretgarden.domain.compliment.service;
 
+import com.ssginc.secretgarden.domain.compliment.dto.ComplimentRankingDto;
 import com.ssginc.secretgarden.domain.compliment.dto.request.WriteComplimentRequest;
 import com.ssginc.secretgarden.domain.compliment.entity.Compliment;
+import com.ssginc.secretgarden.domain.compliment.exception.ComplimentNotFoundException;
 import com.ssginc.secretgarden.domain.compliment.repository.ComplimentRepository;
 import com.ssginc.secretgarden.domain.member.entity.Company;
 import com.ssginc.secretgarden.domain.member.entity.Member;
@@ -24,12 +26,16 @@ public class ComplimentService {
 
     public void writeCompliment(Integer memberId, WriteComplimentRequest writeComplimentRequest) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(()-> new RuntimeException("해당 회원 id가 존재하지 않습니다."));
+                .orElseThrow(()-> new RuntimeException("칭찬 작성자 id가 존재하지 않습니다."));
+        Integer receiverId = writeComplimentRequest.getReceiverId();
+        if(memberRepository.findById(receiverId).isEmpty()){
+            throw new RuntimeException("칭찬 대상자 id가 존재하지 않습니다.");
+        }
         Compliment compliment = Compliment.builder()
                 .member(member)
                 .category(writeComplimentRequest.getCategory())
                 .content(writeComplimentRequest.getContent())
-                .receiver_id(writeComplimentRequest.getReceiverId())
+                .receiver_id(receiverId)
                 .build();
         complimentRepository.save(compliment);
     }
@@ -49,10 +55,14 @@ public class ComplimentService {
         return complimentRepository.findByCategoryOrderByCreatedAtDesc("business");
     }
 
-    public List<Company> getComplimentRanking() {
+    public List<ComplimentRankingDto> getComplimentRanking() {
         int currentMonth = LocalDateTime.now().getMonthValue();
-        List<Company> companyRanking = new ArrayList<>();
-        System.out.println(currentMonth);
-        return companyRanking;
+        return complimentRepository.findTop3Member(currentMonth);
+    }
+
+    public void deleteCompliment(Integer complimentId) {
+        Compliment compliment = complimentRepository.findById(complimentId)
+                .orElseThrow(()->new ComplimentNotFoundException("존재하지 않는 칭찬글 id 입니다."));
+        complimentRepository.delete(compliment);
     }
 }

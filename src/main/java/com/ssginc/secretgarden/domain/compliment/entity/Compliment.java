@@ -1,5 +1,6 @@
 package com.ssginc.secretgarden.domain.compliment.entity;
 
+import com.ssginc.secretgarden.domain.member.entity.Company;
 import com.ssginc.secretgarden.domain.member.entity.Member;
 import jakarta.persistence.*;
 import jdk.jfr.Category;

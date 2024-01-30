@@ -1,9 +1,14 @@
 package com.ssginc.secretgarden.domain.compliment.controller;
 
+import com.ssginc.secretgarden.domain.compliment.dto.ComplimentRankingDto;
 import com.ssginc.secretgarden.domain.compliment.dto.request.WriteComplimentRequest;
+import com.ssginc.secretgarden.domain.compliment.dto.response.ComplimentRankingResponse;
 import com.ssginc.secretgarden.domain.compliment.entity.Compliment;
 import com.ssginc.secretgarden.domain.compliment.service.ComplimentService;
 import com.ssginc.secretgarden.domain.member.entity.Company;
+import com.ssginc.secretgarden.domain.member.entity.Member;
+import com.ssginc.secretgarden.domain.member.repository.MemberRepository;
+import com.ssginc.secretgarden.domain.member.service.MemberService;
 import com.ssginc.secretgarden.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,12 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/compliment")
 public class ComplimentController {
     private final ComplimentService complimentService;
+    private final MemberService memberService;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/{memberId}")
@@ -25,6 +32,13 @@ public class ComplimentController {
          complimentService.writeCompliment(memberId, writeComplimentRequest);
          return new ResponseEntity<>("칭찬글 작성이 완료되었습니다." , HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/{complimentId}")
+    public ResponseEntity<?> deleteCompliment(@PathVariable("complimentId") Integer complimentId){
+        complimentService.deleteCompliment(complimentId);
+        return new ResponseEntity<>("칭찬글이 삭제되었습니다.", HttpStatus.CREATED);
+    }
+
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllComplimentList(){
@@ -51,9 +65,19 @@ public class ComplimentController {
 
     @GetMapping("/ranking")
     public ResponseEntity<?> getComplimentRanking(){
-        List<Company> companyRanking = complimentService.getComplimentRanking();
-        return new ResponseEntity<>(companyRanking, HttpStatus.OK);
+        List<ComplimentRankingDto> rankingDtoList = complimentService.getComplimentRanking();
+        List<ComplimentRankingResponse> rankingResponse = rankingDtoList.stream()
+                .map(complimentRankingDto -> {
+                    ComplimentRankingResponse complimentRankingResponse = new ComplimentRankingResponse();
+                    Member member = memberService.getMemberByMemberId(complimentRankingDto.getMemberId());
+                    complimentRankingResponse.setCompanyId(member.getCompany().getId());
+                    complimentRankingResponse.setCompanyName(member.getCompany().getName());
+                    complimentRankingResponse.setName(member.getName());
+                    complimentRankingResponse.setCount(complimentRankingDto.getCount());
+                    complimentRankingResponse.setRank(complimentRankingDto.getRank());
+                    complimentRankingResponse.setMemberId(complimentRankingDto.getMemberId());
+                    return complimentRankingResponse;
+                }).collect(Collectors.toList());
+        return new ResponseEntity<>(rankingResponse, HttpStatus.OK);
     }
-
-
 }

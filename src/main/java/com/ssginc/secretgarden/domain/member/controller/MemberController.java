@@ -35,7 +35,7 @@ public class MemberController {
         String blossomId = loginRequest.getBlossomId();
         String password = loginRequest.getPassword();
         Member member = memberService.login(blossomId, password);
-        String token = jwtUtil.generateToken(memberService.getMember(blossomId));
+        String token = jwtUtil.generateToken(memberService.getMemberByBlossomId(blossomId));
         LoginResponse loginResponse = LoginResponse.builder()
                             .blossomId(member.getBlossomId())
                 .companyName(member.getCompany().getName())
