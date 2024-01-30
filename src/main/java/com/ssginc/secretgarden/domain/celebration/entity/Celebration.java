@@ -1,6 +1,5 @@
 package com.ssginc.secretgarden.domain.celebration.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssginc.secretgarden.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,6 +27,7 @@ public class Celebration {
     private String content;
     private String category;
     private Boolean isSecret;
+    private String nickname;
 
     @CreatedDate
     private LocalDateTime createdAt;
