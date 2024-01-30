@@ -1,8 +1,10 @@
 package com.ssginc.secretgarden.domain.compliment.dto.response;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class ComplimentRankingResponse {
     private Long rank;
     private Integer memberId;

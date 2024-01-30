@@ -94,4 +94,8 @@ public class CelebrationService {
         }
         celebrationRepository.deleteById(celebrationId);
     }
+
+    public List<Celebration> getSentCelebration(Integer memberId) {
+        return celebrationRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
+    }
 }
