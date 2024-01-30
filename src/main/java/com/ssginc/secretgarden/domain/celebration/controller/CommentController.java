@@ -28,5 +28,14 @@ public class CommentController {
                 .build();
     }
 
+    // 축하 댓글 삭제
+    @DeleteMapping("/celebration/comment/{commentId}")
+    public void deleteComment(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable Integer commentId){
+
+        Integer memberId = jwtUtil.getMemberIdByToken(authorizationHeader);
+        commentService.deleteComment(commentId, memberId);
+    }
 
 }
