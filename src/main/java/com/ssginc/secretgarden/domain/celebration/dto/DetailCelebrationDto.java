@@ -1,12 +1,10 @@
 package com.ssginc.secretgarden.domain.celebration.dto;
 
-import com.ssginc.secretgarden.domain.celebration.dto.response.CelebrationResponseDto;
 import com.ssginc.secretgarden.domain.celebration.entity.Celebration;
-import com.ssginc.secretgarden.domain.member.entity.Member;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter @Setter
 @Builder
@@ -23,7 +21,14 @@ public class DetailCelebrationDto {
     private String category;
     private LocalDateTime createdAt;
 
+    private List<DetailCommentDto> commentList;
+
     public static DetailCelebrationDto toDto(Celebration celebration){
+
+        List<DetailCommentDto> commentDtoList = celebration.getCommentList().stream()
+                .map(DetailCommentDto::toDto)
+                .toList();
+
         return DetailCelebrationDto.builder()
                 .id(celebration.getId())
                 .writer(celebration.getMember().getName())
@@ -34,6 +39,7 @@ public class DetailCelebrationDto {
                 .content(celebration.getContent())
                 .category(celebration.getCategory())
                 .createdAt(celebration.getCreatedAt())
+                .commentList(commentDtoList)
                 .build();
     }
 }
