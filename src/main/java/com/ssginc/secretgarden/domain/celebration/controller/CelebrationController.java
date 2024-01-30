@@ -9,6 +9,7 @@ import com.ssginc.secretgarden.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,19 @@ public class CelebrationController {
 
         return findCelebrations.stream()
                 .filter(c -> "anniversary".equals(c.getCategory()))
+                .map(DetailCelebrationDto::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // 축하 미리보기 (3개)
+    @GetMapping("celebration/preview")
+    public List<DetailCelebrationDto> getCelebrationPreview(){
+
+        List<Celebration> findCelebrations = celebrationService.findCelebrations();
+
+        return findCelebrations.stream()
+                .sorted(Comparator.comparing(Celebration::getId).reversed()) // id 기준으로 내림차순 정렬
+                .limit(3)
                 .map(DetailCelebrationDto::toDto)
                 .collect(Collectors.toList());
     }
