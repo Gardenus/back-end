@@ -1,11 +1,14 @@
 package com.ssginc.secretgarden.domain.celebration.controller;
 
+import com.ssginc.secretgarden.domain.celebration.dto.CelebrationRankingDto;
 import com.ssginc.secretgarden.domain.celebration.dto.request.CommentRequestDto;
 import com.ssginc.secretgarden.domain.celebration.dto.response.CommentResponseDto;
 import com.ssginc.secretgarden.domain.celebration.service.CommentService;
 import com.ssginc.secretgarden.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,6 +39,11 @@ public class CommentController {
 
         Integer memberId = jwtUtil.getMemberIdByToken(authorizationHeader);
         commentService.deleteComment(commentId, memberId);
+    }
+
+    @GetMapping("celebration/ranking")
+    public List<CelebrationRankingDto> getCelebrationRanking(){
+        return commentService.findTopCommentersLastMonth();
     }
 
 }
