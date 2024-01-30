@@ -29,7 +29,7 @@ public class Compliment {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private Integer receiver_id;
+    private Integer receiverId;
 
     private String content;
 

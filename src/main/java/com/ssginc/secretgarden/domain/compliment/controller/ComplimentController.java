@@ -68,15 +68,15 @@ public class ComplimentController {
         List<ComplimentRankingDto> rankingDtoList = complimentService.getComplimentRanking();
         List<ComplimentRankingResponse> rankingResponse = rankingDtoList.stream()
                 .map(complimentRankingDto -> {
-                    ComplimentRankingResponse complimentRankingResponse = new ComplimentRankingResponse();
                     Member member = memberService.getMemberByMemberId(complimentRankingDto.getMemberId());
-                    complimentRankingResponse.setCompanyId(member.getCompany().getId());
-                    complimentRankingResponse.setCompanyName(member.getCompany().getName());
-                    complimentRankingResponse.setName(member.getName());
-                    complimentRankingResponse.setCount(complimentRankingDto.getCount());
-                    complimentRankingResponse.setRank(complimentRankingDto.getRank());
-                    complimentRankingResponse.setMemberId(complimentRankingDto.getMemberId());
-                    return complimentRankingResponse;
+                    return ComplimentRankingResponse.builder()
+                            .companyId(member.getCompany().getId())
+                            .companyName(member.getCompany().getName())
+                            .name(member.getName())
+                            .count(complimentRankingDto.getCount())
+                            .rank(complimentRankingDto.getRank())
+                            .memberId(complimentRankingDto.getMemberId())
+                            .build();
                 }).collect(Collectors.toList());
         return new ResponseEntity<>(rankingResponse, HttpStatus.OK);
     }

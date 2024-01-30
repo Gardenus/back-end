@@ -15,11 +15,15 @@ public interface ComplimentRepository extends JpaRepository<Compliment, Integer>
 
     List<Compliment> findByCategoryOrderByCreatedAtDesc(String daily);
 
-    @Query("SELECT new com.ssginc.secretgarden.domain.compliment.dto.ComplimentRankingDto(c.receiver_id, COUNT(c.id), RANK() OVER (ORDER BY COUNT(c.id) DESC)) " +
+    @Query("SELECT new com.ssginc.secretgarden.domain.compliment.dto.ComplimentRankingDto(c.receiverId, COUNT(c.receiverId), RANK() OVER (ORDER BY COUNT(c.receiverId) desc )) " +
             "FROM Compliment c " +
             "where month(c.createdAt) = :currentMonth " +
-            "group by c.receiver_id " +
-            "ORDER BY COUNT(c.id) DESC " +
+            "group by c.receiverId " +
+            "ORDER BY COUNT(c.receiverId) desc " +
             "LIMIT 3")
     List<ComplimentRankingDto> findTop3Member(@Param("currentMonth")Integer currentMonth);
+
+    List<Compliment> findByReceiverIdOrderByCreatedAtDesc(Integer memberId);
+
+    List<Compliment> findByMemberIdOrderByCreatedAtDesc(Integer memberId);
 }

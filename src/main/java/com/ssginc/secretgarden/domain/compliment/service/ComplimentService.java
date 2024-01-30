@@ -35,7 +35,7 @@ public class ComplimentService {
                 .member(member)
                 .category(writeComplimentRequest.getCategory())
                 .content(writeComplimentRequest.getContent())
-                .receiver_id(receiverId)
+                .receiverId(receiverId)
                 .build();
         complimentRepository.save(compliment);
     }
@@ -64,5 +64,13 @@ public class ComplimentService {
         Compliment compliment = complimentRepository.findById(complimentId)
                 .orElseThrow(()->new ComplimentNotFoundException("존재하지 않는 칭찬글 id 입니다."));
         complimentRepository.delete(compliment);
+    }
+
+    public List<Compliment> getReceivedCompliment(Integer memberId) {
+        return complimentRepository.findByReceiverIdOrderByCreatedAtDesc(memberId);
+    }
+
+    public List<Compliment> getSentCompliment(Integer memberId) {
+        return complimentRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
     }
 }
