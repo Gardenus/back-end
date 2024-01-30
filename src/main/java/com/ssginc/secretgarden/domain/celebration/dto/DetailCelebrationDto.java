@@ -22,11 +22,11 @@ public class DetailCelebrationDto {
     private Boolean isSecret;
     private LocalDateTime createdAt;
 
-    public static DetailCelebrationDto toDto(Celebration celebration, Member member){
+    public static DetailCelebrationDto toDto(Celebration celebration){
         return DetailCelebrationDto.builder()
                 .id(celebration.getId())
-                .writer(member.getName())
-                .company(member.getCompany().getName())
+                .writer(celebration.getMember().getName())
+                .company(celebration.getMember().getCompany().getName())
                 .title(celebration.getTitle())
                 .content(celebration.getContent())
                 .category(celebration.getCategory())

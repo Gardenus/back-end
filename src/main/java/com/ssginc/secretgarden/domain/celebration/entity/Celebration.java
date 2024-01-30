@@ -1,6 +1,5 @@
 package com.ssginc.secretgarden.domain.celebration.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssginc.secretgarden.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

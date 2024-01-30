@@ -1,5 +1,6 @@
 package com.ssginc.secretgarden.domain.celebration.service;
 
+import com.ssginc.secretgarden.domain.celebration.dto.DetailCelebrationDto;
 import com.ssginc.secretgarden.domain.celebration.dto.request.CelebrationRequestDto;
 import com.ssginc.secretgarden.domain.celebration.entity.Celebration;
 import com.ssginc.secretgarden.domain.celebration.repository.CelebrationRepository;
@@ -29,16 +30,11 @@ public class CelebrationService {
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .isSecret(dto.getIsSecret())
-                .category("축하")
+                .category("daily")
                 .member(memberRepository.findById(memberId).get())
                 .build();
 
         return celebrationRepository.save(celebration).getId();
-    }
-
-    // 축하 리스트 조회
-    public List<Celebration> findCelebrations(){
-        return celebrationRepository.findAll();
     }
 
     // 축하 게시글 자동 작성 (오늘의 기념일)
@@ -55,7 +51,7 @@ public class CelebrationService {
                         .content("오늘은 " + member.getName() + "님의 생일입니다~~"
                                 + "모두 함께 축하해주세요~~!!")
                         .isSecret(false)
-                        .category("기념일")
+                        .category("anniversary")
                         .member(memberRepository.findByBlossomId("admin"))
                         .createdAt(LocalDateTime.now())
                         .build();
@@ -64,8 +60,19 @@ public class CelebrationService {
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * *") // 매일 00시 00분에 자동 실행
+    @Scheduled(cron = "0 0 9 * * *") // 매일 00시 00분에 자동 실행
     public void scheduleBirthdayCelebrations() {
         createCelebrationByBirthDate();
+    }
+
+    // 축하 리스트 조회
+    public List<Celebration> findCelebrations(){
+        return celebrationRepository.findAll();
+    }
+
+    // 축하 상세 조회
+    public DetailCelebrationDto findOneCelebration(Integer celebrationId){
+        Celebration findCelebration = celebrationRepository.findById(celebrationId.longValue()).get();
+        return DetailCelebrationDto.toDto(findCelebration);
     }
 }
