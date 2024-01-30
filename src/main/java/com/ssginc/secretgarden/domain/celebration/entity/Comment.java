@@ -23,6 +23,7 @@ public class Comment {
     private Integer id;
 
     private String content;
+    private String nickname;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -34,4 +35,10 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    // 연관관계 편의 메서드 (축하 - 댓글)
+    public void setCelebration(Celebration celebration){
+        this.celebration = celebration;
+        celebration.getCommentList().add(this);
+    }
 }
