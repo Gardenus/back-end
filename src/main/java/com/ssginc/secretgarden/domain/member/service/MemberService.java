@@ -3,6 +3,7 @@ package com.ssginc.secretgarden.domain.member.service;
 import com.ssginc.secretgarden.domain.member.dto.request.SignupRequest;
 import com.ssginc.secretgarden.domain.member.entity.Company;
 import com.ssginc.secretgarden.domain.member.entity.Member;
+import com.ssginc.secretgarden.domain.member.exception.MemberNotFoundException;
 import com.ssginc.secretgarden.domain.member.repository.CompanyRepository;
 import com.ssginc.secretgarden.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class MemberService {
 
     public Member getMemberByMemberId(Integer memberId) {
         return memberRepository.findById(memberId).orElseThrow(
-                ()-> new RuntimeException("존재하지 않는 사용자 id입니다.")
+                ()-> new MemberNotFoundException("존재하지 않는 사용자 id입니다.")
         );
     }
 
