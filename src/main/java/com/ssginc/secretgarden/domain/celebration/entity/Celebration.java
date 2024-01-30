@@ -37,6 +37,7 @@ public class Celebration {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder.Default
     @OneToMany(mappedBy = "celebration")
     private List<Comment> commentList = new ArrayList<>();
 }
