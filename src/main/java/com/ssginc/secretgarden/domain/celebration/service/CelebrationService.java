@@ -66,7 +66,7 @@ public class CelebrationService {
         }
     }
 
-    @Scheduled(cron = "0 10 10 * * *") // 매일 00시 00분에 자동 실행
+    @Scheduled(cron = "0 0 0 * * *") // 매일 00시 00분에 자동 실행
     public void scheduleBirthdayCelebrations() {
         createCelebrationByBirthDate();
     }
