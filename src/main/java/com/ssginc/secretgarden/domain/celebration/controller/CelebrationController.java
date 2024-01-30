@@ -90,4 +90,14 @@ public class CelebrationController {
 
         return celebrationService.findOneCelebration(celebrationId);
     }
+
+    // 축하 게시글 삭제
+    @DeleteMapping("/celebration/{celebrationId}")
+    public void deleteCelebration(
+            @PathVariable("celebrationId") Integer celebrationId,
+            @RequestHeader("Authorization") String authorizationHeader){
+
+        Integer memberId = jwtUtil.getMemberIdByToken(authorizationHeader);
+        celebrationService.deleteCelebration(celebrationId, memberId);
+    }
 }

@@ -80,8 +80,21 @@ public class CelebrationService {
 
     // 축하 상세 조회
     public DetailCelebrationDto findOneCelebration(Integer celebrationId){
-        Celebration findCelebration = celebrationRepository.findById(celebrationId.longValue()).get();
+        Celebration findCelebration = celebrationRepository.findById(celebrationId).get();
         return DetailCelebrationDto.toDto(findCelebration);
+    }
+
+    // 축하 게시글 삭제
+    public void deleteCelebration(Integer celebrationId, Integer memberId){
+        Integer celebrationMemberId = celebrationRepository.findById(celebrationId)
+                .orElseThrow(() -> new IllegalArgumentException("Celebration not found with id: " + celebrationId))
+                .getMember().getId();
+
+        // 게시글 작성자만 해당 게시글 삭제 가능
+        if (!celebrationMemberId.equals(memberId)){
+            throw new IllegalArgumentException("게시글 작성자만 게시글을 삭제할 수 있습니다.");
+        }
+        celebrationRepository.deleteById(celebrationId);
     }
 
     // 익명 닉네임 랜덤 생성 메서드
