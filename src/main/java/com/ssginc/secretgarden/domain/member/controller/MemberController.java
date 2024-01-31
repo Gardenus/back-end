@@ -12,6 +12,7 @@ import com.ssginc.secretgarden.domain.member.entity.Member;
 import com.ssginc.secretgarden.domain.member.service.MemberService;
 import com.ssginc.secretgarden.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,11 +34,13 @@ public class MemberController {
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest signupRequestDto) {
         Boolean idCheck = memberService.idCheck(signupRequestDto.getBlossomId());
+        HttpHeaders resHeaders = new HttpHeaders();
+        resHeaders.add("Content-Type", "application/json;charset=UTF-8");
         if (!idCheck) {
-            return new ResponseEntity<>("중복된 ID 입니다.", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("중복된 ID 입니다.", resHeaders, HttpStatus.CONFLICT);
         }
         memberService.signup(signupRequestDto);
-        return new ResponseEntity<>("회원가입이 완료되었습니다.", HttpStatus.CREATED);
+        return new ResponseEntity<>("회원가입이 완료되었습니다.", resHeaders ,HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

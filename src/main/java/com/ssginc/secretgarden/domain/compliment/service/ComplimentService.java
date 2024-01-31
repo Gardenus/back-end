@@ -7,6 +7,7 @@ import com.ssginc.secretgarden.domain.compliment.exception.ComplimentNotFoundExc
 import com.ssginc.secretgarden.domain.compliment.repository.ComplimentRepository;
 import com.ssginc.secretgarden.domain.member.entity.Company;
 import com.ssginc.secretgarden.domain.member.entity.Member;
+import com.ssginc.secretgarden.domain.member.exception.MemberNotFoundException;
 import com.ssginc.secretgarden.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,17 +26,15 @@ public class ComplimentService {
     private final ComplimentRepository complimentRepository;
 
     public void writeCompliment(Integer memberId, WriteComplimentRequest writeComplimentRequest) {
-        Member member = memberRepository.findById(memberId)
+        Member writer = memberRepository.findById(memberId)
                 .orElseThrow(()-> new RuntimeException("칭찬 작성자 id가 존재하지 않습니다."));
-        Integer receiverId = writeComplimentRequest.getReceiverId();
-        if(memberRepository.findById(receiverId).isEmpty()){
-            throw new RuntimeException("칭찬 대상자 id가 존재하지 않습니다.");
-        }
+        Member receiver = memberRepository.findFirstByNameOrderByIdAsc(writeComplimentRequest.getName())
+                .orElseThrow(() -> new MemberNotFoundException("칭찬 대상자가 존재하지 않습니다."));
         Compliment compliment = Compliment.builder()
-                .member(member)
+                .member(writer)
+                .receiverId(receiver.getId())
                 .category(writeComplimentRequest.getCategory())
                 .content(writeComplimentRequest.getContent())
-                .receiverId(receiverId)
                 .build();
         complimentRepository.save(compliment);
     }

@@ -14,10 +14,13 @@ import com.ssginc.secretgarden.domain.member.repository.MemberRepository;
 import com.ssginc.secretgarden.domain.member.service.MemberService;
 import com.ssginc.secretgarden.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,13 +36,17 @@ public class ComplimentController {
     public ResponseEntity<?> writeCompliment(@RequestBody WriteComplimentRequest writeComplimentRequest,
                                              @PathVariable("memberId") Integer memberId){
          complimentService.writeCompliment(memberId, writeComplimentRequest);
-         return new ResponseEntity<>("칭찬글 작성이 완료되었습니다." , HttpStatus.CREATED);
+        HttpHeaders resHeaders = new HttpHeaders();
+        resHeaders.add("Content-Type", "application/json;charset=UTF-8");
+        return new ResponseEntity<>("칭찬글 작성이 완료되었습니다.",resHeaders,HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{complimentId}")
     public ResponseEntity<?> deleteCompliment(@PathVariable("complimentId") Integer complimentId){
         complimentService.deleteCompliment(complimentId);
-        return new ResponseEntity<>("칭찬글이 삭제되었습니다.", HttpStatus.CREATED);
+        HttpHeaders resHeaders = new HttpHeaders();
+        resHeaders.add("Content-Type", "application/json;charset=UTF-8");
+        return new ResponseEntity<>("칭찬글이 삭제되었습니다.", resHeaders, HttpStatus.CREATED);
     }
 
 
