@@ -1,15 +1,14 @@
 package com.ssginc.secretgarden.domain.celebration.controller;
 
 import com.ssginc.secretgarden.domain.celebration.dto.CelebrationRankingDto;
-import com.ssginc.secretgarden.domain.celebration.dto.ListResponseDto;
+import com.ssginc.secretgarden.domain.celebration.dto.CreateCommentDto;
 import com.ssginc.secretgarden.domain.celebration.dto.RankingResponseDto;
 import com.ssginc.secretgarden.domain.celebration.dto.request.CommentRequestDto;
-import com.ssginc.secretgarden.domain.celebration.dto.response.CommentResponseDto;
 import com.ssginc.secretgarden.domain.celebration.service.CommentService;
-import com.ssginc.secretgarden.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,14 +19,12 @@ public class CommentController {
 
     // 축하 댓글 작성
     @PostMapping("/celebration/comment/{celebrationId}/{memberId}")
-    public CommentResponseDto createComment(
+    public CreateCommentDto createComment(
             @RequestBody CommentRequestDto dto,
             @PathVariable("celebrationId") Integer celebrationId,
-            @PathVariable("memberId") Integer memberId){
+            @PathVariable("memberId") Integer memberId) throws IOException {
 
-        return CommentResponseDto.builder()
-                .id(commentService.createComment(dto, memberId, celebrationId))
-                .build();
+        return commentService.createComment(dto, memberId, celebrationId);
     }
 
     // 축하 댓글 삭제

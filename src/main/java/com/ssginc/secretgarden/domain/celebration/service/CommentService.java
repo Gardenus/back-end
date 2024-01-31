@@ -1,6 +1,7 @@
 package com.ssginc.secretgarden.domain.celebration.service;
 
 import com.ssginc.secretgarden.domain.celebration.dto.CelebrationRankingDto;
+import com.ssginc.secretgarden.domain.celebration.dto.CreateCommentDto;
 import com.ssginc.secretgarden.domain.celebration.dto.request.CommentRequestDto;
 import com.ssginc.secretgarden.domain.celebration.entity.Comment;
 import com.ssginc.secretgarden.domain.celebration.repository.CelebrationRepository;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -30,17 +32,29 @@ public class CommentService {
     private final MemberRepository memberRepository;
 
     // 축하 댓글 작성
-    public Integer createComment(CommentRequestDto dto, Integer memberId, Integer celebrationId){
+    public CreateCommentDto createComment(CommentRequestDto dto, Integer memberId, Integer celebrationId) throws IOException {
 
-        Comment comment = Comment.builder()
-                .content(dto.getContent())
-                .nickname(Custom.createRandomNickname())
-                .member(memberRepository.findById(memberId).get())
+        String answer = Custom.filterCommentByGPT(dto.getContent());
+        if (answer.equals("good")){ // answer 이 "good"인 경우
+            Comment comment = Comment.builder()
+                    .content(dto.getContent())
+                    .nickname(Custom.createRandomNickname())
+                    .member(memberRepository.findById(memberId).get())
+                    .build();
+
+            comment.setCelebration(celebrationRepository.findById(celebrationId).get());
+
+            // return commentRepository.save(comment).getId();
+            return CreateCommentDto.builder()
+                    .id(commentRepository.save(comment).getId())
+                    .answer(answer)
+                    .build();
+        }
+        // answer 이 "bad"인 경우
+        return CreateCommentDto.builder()
+                .id(-1)
+                .answer(answer)
                 .build();
-
-        comment.setCelebration(celebrationRepository.findById(celebrationId).get());
-
-        return commentRepository.save(comment).getId();
     }
 
     // 축하 댓글 삭제
@@ -52,6 +66,7 @@ public class CommentService {
         commentRepository.deleteById(commentId);
     }
 
+    // 이 달의 축하 계열사
     public List<CelebrationRankingDto> findTopCommentersLastMonth() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfLastMonth = now.minusMonths(1).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
