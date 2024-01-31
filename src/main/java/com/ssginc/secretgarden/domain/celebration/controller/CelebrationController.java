@@ -1,6 +1,8 @@
 package com.ssginc.secretgarden.domain.celebration.controller;
 
 import com.ssginc.secretgarden.domain.celebration.dto.DetailCelebrationDto;
+import com.ssginc.secretgarden.domain.celebration.dto.ListDetailCelebrationDto;
+import com.ssginc.secretgarden.domain.celebration.dto.ListResponseDto;
 import com.ssginc.secretgarden.domain.celebration.dto.request.CelebrationRequestDto;
 import com.ssginc.secretgarden.domain.celebration.dto.response.CelebrationResponseDto;
 import com.ssginc.secretgarden.domain.celebration.entity.Celebration;
@@ -9,11 +11,9 @@ import com.ssginc.secretgarden.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,12 +23,11 @@ public class CelebrationController {
     private final JwtUtil jwtUtil;
 
     // 축하 게시글 작성
-    @PostMapping("/celebration")
-    public CelebrationResponseDto createCelebration(
+    @PostMapping("/celebration/{memberId}")
+    public CelebrationResponseDto createCelebration (
             @RequestBody CelebrationRequestDto dto,
-            @RequestHeader("Authorization") String authorizationHeader){
-
-        Integer memberId = jwtUtil.getMemberIdByToken(authorizationHeader);
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable("memberId") Integer memberId) throws IOException{
 
         return CelebrationResponseDto.builder()
                 .id(celebrationService.createCelebration(dto, memberId))
@@ -37,50 +36,66 @@ public class CelebrationController {
 
     // 축하 리스트 조회
     @GetMapping("/celebration")
-    public List<DetailCelebrationDto> getAllCelebrationList(){
+    public ListResponseDto getAllCelebrationList(){
 
         List<Celebration> findCelebrations = celebrationService.findCelebrations();
 
-        return findCelebrations.stream()
-                .map(DetailCelebrationDto::toDto)
-                .collect(Collectors.toList());
+        List<ListDetailCelebrationDto> allCelebrations = findCelebrations.stream()
+                .map(ListDetailCelebrationDto::toDto)
+                .toList();
+
+        return ListResponseDto.builder()
+                .list(allCelebrations)
+                .build();
     }
 
     // 축하 리스트 조회 (오늘의 축하) - daily
     @GetMapping("/celebration/daily")
-    public List<DetailCelebrationDto> getDailyCelebrationList(){
+    public ListResponseDto getDailyCelebrationList(){
 
         List<Celebration> findCelebrations = celebrationService.findCelebrations();
 
-        return findCelebrations.stream()
+        List<ListDetailCelebrationDto> dailyCelebrations = findCelebrations.stream()
                 .filter(c -> "daily".equals(c.getCategory()))
-                .map(DetailCelebrationDto::toDto)
-                .collect(Collectors.toList());
+                .map(ListDetailCelebrationDto::toDto)
+                .toList();
+
+        return ListResponseDto.builder()
+                .list(dailyCelebrations)
+                .build();
     }
 
     // 축하 리스트 조회 (오늘의 기념일) - anniversary
     @GetMapping("/celebration/anniversary")
-    public List<DetailCelebrationDto> getAnniversaryCelebrationList(){
+    public ListResponseDto getAnniversaryCelebrationList(){
 
         List<Celebration> findCelebrations = celebrationService.findCelebrations();
 
-        return findCelebrations.stream()
+        List<ListDetailCelebrationDto> anniversaryCelebrations = findCelebrations.stream()
                 .filter(c -> "anniversary".equals(c.getCategory()))
-                .map(DetailCelebrationDto::toDto)
-                .collect(Collectors.toList());
+                .map(ListDetailCelebrationDto::toDto)
+                .toList();
+
+        return ListResponseDto.builder()
+                .list(anniversaryCelebrations)
+                .build();
     }
 
     // 축하 미리보기 (3개)
     @GetMapping("celebration/preview")
-    public List<DetailCelebrationDto> getCelebrationPreview(){
+    public ListResponseDto getCelebrationPreview(){
 
         List<Celebration> findCelebrations = celebrationService.findCelebrations();
 
-        return findCelebrations.stream()
+        List<ListDetailCelebrationDto> previewCelebrations = findCelebrations.stream()
                 .sorted(Comparator.comparing(Celebration::getId).reversed()) // id 기준으로 내림차순 정렬
                 .limit(3)
-                .map(DetailCelebrationDto::toDto)
-                .collect(Collectors.toList());
+                .map(ListDetailCelebrationDto::toDto)
+                .toList();
+
+        return ListResponseDto.builder()
+                .list(previewCelebrations)
+                .build();
     }
     
     // 축하 게시글 상세 조회
@@ -94,10 +109,7 @@ public class CelebrationController {
     // 축하 게시글 삭제
     @DeleteMapping("/celebration/{celebrationId}")
     public void deleteCelebration(
-            @PathVariable("celebrationId") Integer celebrationId,
-            @RequestHeader("Authorization") String authorizationHeader){
-
-        Integer memberId = jwtUtil.getMemberIdByToken(authorizationHeader);
-        celebrationService.deleteCelebration(celebrationId, memberId);
+            @PathVariable("celebrationId") Integer celebrationId){
+        celebrationService.deleteCelebration(celebrationId);
     }
 }

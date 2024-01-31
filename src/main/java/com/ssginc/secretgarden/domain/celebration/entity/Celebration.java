@@ -29,6 +29,7 @@ public class Celebration {
     private String category;
     private Boolean isSecret;
     private String nickname;
+    private String imageUrl;
 
     @CreatedDate
     private LocalDateTime createdAt;
