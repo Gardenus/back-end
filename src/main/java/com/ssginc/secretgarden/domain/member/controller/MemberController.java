@@ -2,18 +2,17 @@ package com.ssginc.secretgarden.domain.member.controller;
 
 import com.ssginc.secretgarden.domain.celebration.entity.Celebration;
 import com.ssginc.secretgarden.domain.celebration.service.CelebrationService;
+import com.ssginc.secretgarden.domain.compliment.dto.response.ComplimentListResponse;
 import com.ssginc.secretgarden.domain.compliment.entity.Compliment;
 import com.ssginc.secretgarden.domain.compliment.service.ComplimentService;
 import com.ssginc.secretgarden.domain.member.dto.request.LoginRequest;
 import com.ssginc.secretgarden.domain.member.dto.request.SignupRequest;
-import com.ssginc.secretgarden.domain.member.dto.response.CelebrationResponse;
-import com.ssginc.secretgarden.domain.member.dto.response.ComplimentResponse;
-import com.ssginc.secretgarden.domain.member.dto.response.LoginResponse;
-import com.ssginc.secretgarden.domain.member.dto.response.MemberResponse;
+import com.ssginc.secretgarden.domain.member.dto.response.*;
 import com.ssginc.secretgarden.domain.member.entity.Member;
 import com.ssginc.secretgarden.domain.member.service.MemberService;
 import com.ssginc.secretgarden.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,11 +34,13 @@ public class MemberController {
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest signupRequestDto) {
         Boolean idCheck = memberService.idCheck(signupRequestDto.getBlossomId());
+        HttpHeaders resHeaders = new HttpHeaders();
+        resHeaders.add("Content-Type", "application/json;charset=UTF-8");
         if (!idCheck) {
-            return new ResponseEntity<>("중복된 ID 입니다.", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("중복된 ID 입니다.", resHeaders, HttpStatus.CONFLICT);
         }
         memberService.signup(signupRequestDto);
-        return new ResponseEntity<>("회원가입이 완료되었습니다.", HttpStatus.CREATED);
+        return new ResponseEntity<>("회원가입이 완료되었습니다.", resHeaders ,HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -83,7 +84,8 @@ public class MemberController {
                         .name(member.getName())
                         .companyName(member.getCompany().getName())
                         .build()).collect(Collectors.toList());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        ComplimentListResponse complimentListResponse = new ComplimentListResponse(response);
+        return new ResponseEntity<>(complimentListResponse, HttpStatus.OK);
     }
 
     @GetMapping("/compliment/send/{memberId}")
@@ -102,7 +104,8 @@ public class MemberController {
                                     .build();
                         }
                 ).collect(Collectors.toList());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        ComplimentListResponse complimentListResponse = new ComplimentListResponse(response);
+        return new ResponseEntity<>(complimentListResponse, HttpStatus.OK);
     }
 
     @GetMapping("/celebration/send/{memberId}")
@@ -119,7 +122,8 @@ public class MemberController {
                                     .build();
                         }
                 ).collect(Collectors.toList());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        CelebrationListResponse celebrationListResponse = new CelebrationListResponse(response);
+        return new ResponseEntity<>(celebrationListResponse, HttpStatus.OK);
     }
 
 }

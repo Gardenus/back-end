@@ -2,19 +2,25 @@ package com.ssginc.secretgarden.domain.compliment.controller;
 
 import com.ssginc.secretgarden.domain.compliment.dto.ComplimentRankingDto;
 import com.ssginc.secretgarden.domain.compliment.dto.request.WriteComplimentRequest;
+import com.ssginc.secretgarden.domain.compliment.dto.response.ComplimentListResponse;
+import com.ssginc.secretgarden.domain.compliment.dto.response.ComplimentRankingListResponse;
 import com.ssginc.secretgarden.domain.compliment.dto.response.ComplimentRankingResponse;
 import com.ssginc.secretgarden.domain.compliment.entity.Compliment;
 import com.ssginc.secretgarden.domain.compliment.service.ComplimentService;
+import com.ssginc.secretgarden.domain.member.dto.response.ComplimentResponse;
 import com.ssginc.secretgarden.domain.member.entity.Company;
 import com.ssginc.secretgarden.domain.member.entity.Member;
 import com.ssginc.secretgarden.domain.member.repository.MemberRepository;
 import com.ssginc.secretgarden.domain.member.service.MemberService;
 import com.ssginc.secretgarden.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,37 +36,97 @@ public class ComplimentController {
     public ResponseEntity<?> writeCompliment(@RequestBody WriteComplimentRequest writeComplimentRequest,
                                              @PathVariable("memberId") Integer memberId){
          complimentService.writeCompliment(memberId, writeComplimentRequest);
-         return new ResponseEntity<>("칭찬글 작성이 완료되었습니다." , HttpStatus.CREATED);
+        HttpHeaders resHeaders = new HttpHeaders();
+        resHeaders.add("Content-Type", "application/json;charset=UTF-8");
+        return new ResponseEntity<>("칭찬글 작성이 완료되었습니다.",resHeaders,HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{complimentId}")
     public ResponseEntity<?> deleteCompliment(@PathVariable("complimentId") Integer complimentId){
         complimentService.deleteCompliment(complimentId);
-        return new ResponseEntity<>("칭찬글이 삭제되었습니다.", HttpStatus.CREATED);
+        HttpHeaders resHeaders = new HttpHeaders();
+        resHeaders.add("Content-Type", "application/json;charset=UTF-8");
+        return new ResponseEntity<>("칭찬글이 삭제되었습니다.", resHeaders, HttpStatus.CREATED);
     }
 
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllComplimentList(){
         List<Compliment> allComplimentList = complimentService.getAllComplimentList();
-        return new ResponseEntity<>(allComplimentList, HttpStatus.OK);
+        List<ComplimentResponse> response = allComplimentList.stream()
+                .map(compliment ->
+                        {
+                            Member member = memberService.getMemberByMemberId(compliment.getReceiverId());
+                            return ComplimentResponse.builder()
+                                    .complimentId(compliment.getId())
+                                    .category(compliment.getCategory())
+                                    .content(compliment.getContent())
+                                    .name(member.getName())
+                                    .companyName(member.getCompany().getName())
+                                    .build();
+                        }
+                ).collect(Collectors.toList());
+        ComplimentListResponse complimentListResponse = new ComplimentListResponse(response);
+        return new ResponseEntity<>(complimentListResponse, HttpStatus.OK);
     }
     @GetMapping("/business")
     public ResponseEntity<?> getBizComplimentList(){
         List<Compliment> bizComplimentList = complimentService.getBizComplimentList();
-        return new ResponseEntity<>(bizComplimentList, HttpStatus.OK);
+        List<ComplimentResponse> response = bizComplimentList.stream()
+                .map(compliment ->
+                        {
+                            Member member = memberService.getMemberByMemberId(compliment.getReceiverId());
+                            return ComplimentResponse.builder()
+                                    .complimentId(compliment.getId())
+                                    .category(compliment.getCategory())
+                                    .content(compliment.getContent())
+                                    .name(member.getName())
+                                    .companyName(member.getCompany().getName())
+                                    .build();
+                        }
+                ).collect(Collectors.toList());
+        ComplimentListResponse complimentListResponse = new ComplimentListResponse(response);
+        return new ResponseEntity<>(complimentListResponse, HttpStatus.OK);
     }
 
     @GetMapping("/daily")
     public ResponseEntity<?> getDailyComplimentList(){
         List<Compliment> dailyComplimentList = complimentService.getDailyComplimentList();
-        return new ResponseEntity<>(dailyComplimentList, HttpStatus.OK);
+        List<ComplimentResponse> response = dailyComplimentList.stream()
+                .map(compliment ->
+                        {
+                            Member member = memberService.getMemberByMemberId(compliment.getReceiverId());
+                            return ComplimentResponse.builder()
+                                    .complimentId(compliment.getId())
+                                    .category(compliment.getCategory())
+                                    .content(compliment.getContent())
+                                    .name(member.getName())
+                                    .companyName(member.getCompany().getName())
+                                    .build();
+                        }
+                ).collect(Collectors.toList());
+        ComplimentListResponse complimentListResponse = new ComplimentListResponse(response);
+        return new ResponseEntity<>(complimentListResponse, HttpStatus.OK);
     }
 
     @GetMapping("/preview")
     public ResponseEntity<?> getComplimentPreview(){
         List<Compliment> complimentPreview = complimentService.getComplimentPreview();
-        return new ResponseEntity<>(complimentPreview, HttpStatus.OK);
+        List<ComplimentResponse> response = complimentPreview.stream()
+                .map(compliment ->
+                        {
+                            Member member = memberService.getMemberByMemberId(compliment.getReceiverId());
+                            return ComplimentResponse.builder()
+                                    .complimentId(compliment.getId())
+                                    .category(compliment.getCategory())
+                                    .content(compliment.getContent())
+                                    .name(member.getName())
+                                    .companyName(member.getCompany().getName())
+                                    .build();
+                        }
+                ).collect(Collectors.toList());
+        ComplimentListResponse complimentListResponse = new ComplimentListResponse(response);
+        return new ResponseEntity<>(complimentListResponse, HttpStatus.OK);
     }
 
     @GetMapping("/ranking")
@@ -78,6 +144,7 @@ public class ComplimentController {
                             .memberId(complimentRankingDto.getMemberId())
                             .build();
                 }).collect(Collectors.toList());
-        return new ResponseEntity<>(rankingResponse, HttpStatus.OK);
+        ComplimentRankingListResponse complimentRankingListResponse = new ComplimentRankingListResponse(rankingResponse);
+        return new ResponseEntity<>(complimentRankingListResponse, HttpStatus.OK);
     }
 }
