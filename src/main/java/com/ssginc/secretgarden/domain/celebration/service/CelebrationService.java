@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +25,7 @@ public class CelebrationService {
     private final MemberRepository memberRepository;
 
     // 축하 게시글 작성
-    public Integer createCelebration(CelebrationRequestDto dto, Integer memberId){
+    public Integer createCelebration(CelebrationRequestDto dto, Integer memberId) throws IOException {
 
         String nickname = "";
         if (dto.getIsSecret()) nickname = Custom.createRandomNickname();
@@ -37,13 +38,14 @@ public class CelebrationService {
                 .nickname(nickname)
                 .category("daily")
                 .member(memberRepository.findById(memberId).get())
+                .imageUrl(Custom.createImageByGPT("daily", dto.getContent()))
                 .build();
 
         return celebrationRepository.save(celebration).getId();
     }
 
     // 축하 게시글 자동 작성 (오늘의 기념일)
-    public void createCelebrationByBirthDate(){
+    public void createCelebrationByBirthDate() throws IOException{
         LocalDate today = LocalDate.now();
 
         List<Member> birthdayMembers
@@ -51,14 +53,15 @@ public class CelebrationService {
         
         for (Member member : birthdayMembers) {
             if (!member.getBlossomId().equals("admin")){
+                String content = "오늘은 " + member.getName() + "님의 생일입니다~~" + "모두 함께 축하해주세요~~!!";
                 Celebration celebration = Celebration.builder()
-                        .title(member.getName() + "님의 생일을 축하합니다!")
-                        .content("오늘은 " + member.getName() + "님의 생일입니다~~"
-                                + "모두 함께 축하해주세요~~!!")
+                        .title(member.getName() + " 님의 생일을 축하합니다!")
+                        .content(content)
                         .isSecret(false)
                         .nickname("신세계")
                         .category("anniversary")
                         .member(memberRepository.findByBlossomId("admin"))
+                        .imageUrl(Custom.createImageByGPT("anniversary", content))
                         .createdAt(LocalDateTime.now())
                         .build();
                 celebrationRepository.save(celebration);
@@ -66,8 +69,8 @@ public class CelebrationService {
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * *") // 매일 00시 00분에 자동 실행
-    public void scheduleBirthdayCelebrations() {
+    @Scheduled(cron = "0 0 6 * * *") // 매일 06시 00분에 자동 실행
+    public void scheduleBirthdayCelebrations() throws IOException{
         createCelebrationByBirthDate();
     }
 
@@ -83,15 +86,10 @@ public class CelebrationService {
     }
 
     // 축하 게시글 삭제
-    public void deleteCelebration(Integer celebrationId, Integer memberId){
+    public void deleteCelebration(Integer celebrationId){
         Integer celebrationMemberId = celebrationRepository.findById(celebrationId)
                 .orElseThrow(() -> new IllegalArgumentException("Celebration not found with id: " + celebrationId))
                 .getMember().getId();
-
-        // 게시글 작성자만 해당 게시글 삭제 가능
-        if (!celebrationMemberId.equals(memberId)){
-            throw new IllegalArgumentException("게시글 작성자만 게시글을 삭제할 수 있습니다.");
-        }
         celebrationRepository.deleteById(celebrationId);
     }
 

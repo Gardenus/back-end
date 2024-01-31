@@ -1,6 +1,8 @@
 package com.ssginc.secretgarden.domain.celebration.controller;
 
 import com.ssginc.secretgarden.domain.celebration.dto.CelebrationRankingDto;
+import com.ssginc.secretgarden.domain.celebration.dto.ListResponseDto;
+import com.ssginc.secretgarden.domain.celebration.dto.RankingResponseDto;
 import com.ssginc.secretgarden.domain.celebration.dto.request.CommentRequestDto;
 import com.ssginc.secretgarden.domain.celebration.dto.response.CommentResponseDto;
 import com.ssginc.secretgarden.domain.celebration.service.CommentService;
@@ -18,13 +20,12 @@ public class CommentController {
     private final JwtUtil jwtUtil;
 
     // 축하 댓글 작성
-    @PostMapping("/celebration/comment/{celebrationId}")
+    @PostMapping("/celebration/comment/{celebrationId}/{memberId}")
     public CommentResponseDto createComment(
             @RequestBody CommentRequestDto dto,
             @RequestHeader("Authorization") String authorizationHeader,
-            @PathVariable Integer celebrationId){
-
-        Integer memberId = jwtUtil.getMemberIdByToken(authorizationHeader);
+            @PathVariable("celebrationId") Integer celebrationId,
+            @PathVariable("memberId") Integer memberId){
 
         return CommentResponseDto.builder()
                 .id(commentService.createComment(dto, memberId, celebrationId))
@@ -33,17 +34,17 @@ public class CommentController {
 
     // 축하 댓글 삭제
     @DeleteMapping("/celebration/comment/{commentId}")
-    public void deleteComment(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @PathVariable Integer commentId){
-
-        Integer memberId = jwtUtil.getMemberIdByToken(authorizationHeader);
-        commentService.deleteComment(commentId, memberId);
+    public void deleteComment(@PathVariable Integer commentId){
+        commentService.deleteComment(commentId);
     }
 
     @GetMapping("celebration/ranking")
-    public List<CelebrationRankingDto> getCelebrationRanking(){
-        return commentService.findTopCommentersLastMonth();
+    public RankingResponseDto getCelebrationRanking(){
+        List<CelebrationRankingDto> rankingDtoList = commentService.findTopCommentersLastMonth();
+
+        return RankingResponseDto.builder()
+                .rankingList(rankingDtoList)
+                .build();
     }
 
 }

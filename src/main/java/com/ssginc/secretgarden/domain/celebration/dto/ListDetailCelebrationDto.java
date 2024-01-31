@@ -4,13 +4,13 @@ import com.ssginc.secretgarden.domain.celebration.entity.Celebration;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DetailCelebrationDto {
+public class ListDetailCelebrationDto {
+
     private Integer id;
     private String company;
     private String nickname;
@@ -21,15 +21,9 @@ public class DetailCelebrationDto {
     private String imageUrl;
     private LocalDateTime createdAt;
 
-    private List<DetailCommentDto> commentList;
+    public static ListDetailCelebrationDto toDto(Celebration celebration){
 
-    public static DetailCelebrationDto toDto(Celebration celebration){
-
-        List<DetailCommentDto> commentDtoList = celebration.getCommentList().stream()
-                .map(DetailCommentDto::toDto)
-                .toList();
-
-        return DetailCelebrationDto.builder()
+        return ListDetailCelebrationDto.builder()
                 .id(celebration.getId())
                 .company(celebration.getMember().getCompany().getName())
                 .nickname(celebration.getNickname())
@@ -39,7 +33,6 @@ public class DetailCelebrationDto {
                 .category(celebration.getCategory())
                 .createdAt(celebration.getCreatedAt())
                 .imageUrl(celebration.getImageUrl())
-                .commentList(commentDtoList)
                 .build();
     }
 }

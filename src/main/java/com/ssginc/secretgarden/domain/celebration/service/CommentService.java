@@ -44,15 +44,11 @@ public class CommentService {
     }
 
     // 축하 댓글 삭제
-    public void deleteComment(Integer commentId, Integer memberId){
+    public void deleteComment(Integer commentId){
         Integer commentMemberId = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + commentId))
                 .getMember().getId();
 
-        // 댓글 작성자만 해당 댓글 삭제 가능
-        if (!commentMemberId.equals(memberId)){
-            throw new IllegalArgumentException("댓글 작성자만 댓글을 삭제할 수 있습니다.");
-        }
         commentRepository.deleteById(commentId);
     }
 
@@ -81,7 +77,7 @@ public class CommentService {
                     return CelebrationRankingDto.builder()
                             .rank(rank.getAndIncrement()) // 현재 순위 사용하고, 1 증가
                             .company(companyName)
-                            .commentCount(commentCount)
+                            .count(commentCount)
                             .build();
                 })
                 .collect(Collectors.toList());

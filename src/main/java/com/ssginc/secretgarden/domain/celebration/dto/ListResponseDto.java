@@ -2,13 +2,13 @@ package com.ssginc.secretgarden.domain.celebration.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CelebrationRankingDto {
+public class ListResponseDto {
 
-    private Integer rank;
-    private String company;
-    private Long count;
+    private List<ListDetailCelebrationDto> list;
 }
