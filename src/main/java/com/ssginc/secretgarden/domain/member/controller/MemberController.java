@@ -2,14 +2,12 @@ package com.ssginc.secretgarden.domain.member.controller;
 
 import com.ssginc.secretgarden.domain.celebration.entity.Celebration;
 import com.ssginc.secretgarden.domain.celebration.service.CelebrationService;
+import com.ssginc.secretgarden.domain.compliment.dto.response.ComplimentListResponse;
 import com.ssginc.secretgarden.domain.compliment.entity.Compliment;
 import com.ssginc.secretgarden.domain.compliment.service.ComplimentService;
 import com.ssginc.secretgarden.domain.member.dto.request.LoginRequest;
 import com.ssginc.secretgarden.domain.member.dto.request.SignupRequest;
-import com.ssginc.secretgarden.domain.member.dto.response.CelebrationResponse;
-import com.ssginc.secretgarden.domain.member.dto.response.ComplimentResponse;
-import com.ssginc.secretgarden.domain.member.dto.response.LoginResponse;
-import com.ssginc.secretgarden.domain.member.dto.response.MemberResponse;
+import com.ssginc.secretgarden.domain.member.dto.response.*;
 import com.ssginc.secretgarden.domain.member.entity.Member;
 import com.ssginc.secretgarden.domain.member.service.MemberService;
 import com.ssginc.secretgarden.global.util.JwtUtil;
@@ -83,7 +81,8 @@ public class MemberController {
                         .name(member.getName())
                         .companyName(member.getCompany().getName())
                         .build()).collect(Collectors.toList());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        ComplimentListResponse complimentListResponse = new ComplimentListResponse(response);
+        return new ResponseEntity<>(complimentListResponse, HttpStatus.OK);
     }
 
     @GetMapping("/compliment/send/{memberId}")
@@ -102,7 +101,8 @@ public class MemberController {
                                     .build();
                         }
                 ).collect(Collectors.toList());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        ComplimentListResponse complimentListResponse = new ComplimentListResponse(response);
+        return new ResponseEntity<>(complimentListResponse, HttpStatus.OK);
     }
 
     @GetMapping("/celebration/send/{memberId}")
@@ -119,7 +119,8 @@ public class MemberController {
                                     .build();
                         }
                 ).collect(Collectors.toList());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        CelebrationListResponse celebrationListResponse = new CelebrationListResponse(response);
+        return new ResponseEntity<>(celebrationListResponse, HttpStatus.OK);
     }
 
 }
