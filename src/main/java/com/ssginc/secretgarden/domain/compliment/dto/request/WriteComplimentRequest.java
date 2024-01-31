@@ -8,9 +8,9 @@ import lombok.Data;
 public class WriteComplimentRequest {
 
     @NotEmpty
-    private Integer receiverId;
-    @NotEmpty
     private Integer companyId;
+    @NotEmpty
+    private String name;
     @NotEmpty
     private String category;
     @NotEmpty
