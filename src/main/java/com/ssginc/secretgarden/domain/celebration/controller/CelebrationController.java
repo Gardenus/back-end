@@ -20,13 +20,11 @@ import java.util.List;
 public class CelebrationController {
 
     private final CelebrationService celebrationService;
-    private final JwtUtil jwtUtil;
 
     // 축하 게시글 작성
     @PostMapping("/celebration/{memberId}")
     public CelebrationResponseDto createCelebration (
             @RequestBody CelebrationRequestDto dto,
-            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable("memberId") Integer memberId) throws IOException{
 
         return CelebrationResponseDto.builder()

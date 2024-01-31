@@ -17,13 +17,11 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
-    private final JwtUtil jwtUtil;
 
     // 축하 댓글 작성
     @PostMapping("/celebration/comment/{celebrationId}/{memberId}")
     public CommentResponseDto createComment(
             @RequestBody CommentRequestDto dto,
-            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable("celebrationId") Integer celebrationId,
             @PathVariable("memberId") Integer memberId){
 
