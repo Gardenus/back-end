@@ -48,6 +48,7 @@ public class Custom {
         return nick.get(0) + " " + name.get(0);
     }
 
+    // GPT-4를 활용한 이미지 생성
     public static String createImageByGPT(String category, String content) throws IOException {
 
         OkHttpClient client = new OkHttpClient().newBuilder()
@@ -62,7 +63,7 @@ public class Custom {
             body = RequestBody.Companion.create("{\"model\": \"dall-e-3\", \"prompt\": \" Create an image of cute animal wishing me a happy birthday while setting a garden with colorful flowers in the background.\", \"n\": 1, \"size\": \"1024x1024\"}", mediaType);
         } else if (category.equals("daily")){
             // String prompt = "Create an image of cute animal celebrating that " + content + ".";
-            String prompt = content + "알록다록 꽃들이 펼쳐진 정원에서 앞의 내용을 축하해주는 귀여운 동물 이미지를 생성해줘.";
+            String prompt = content + "알록달록 꽃들이 펼쳐진 정원에서 앞의 내용을 축하해주는 귀여운 동물 이미지를 생성해줘.";
             body = RequestBody.Companion.create("{\"model\": \"dall-e-3\", \"prompt\": \"" + prompt + "\", \"n\": 1, \"size\": \"1024x1024\"}", mediaType);
         }
         Request request = new Request.Builder()
@@ -88,5 +89,48 @@ public class Custom {
             e.printStackTrace();
         }
         return null; // 예외가 발생하거나 응답 본문이 null일 경우 null 반환
+    }
+
+    // GPT-4를 활용한 댓글 필터링
+    public static String filterCommentByGPT(String content) throws IOException {
+
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        String jsonContent = "{ \"model\": \"gpt-4\", \"messages\": [{ \"role\": \"system\", \"content\": \"You are a helpful assistant that can detect negative sentiments.\" }, { \"role\": \"user\", \"content\": \"" + "Please analyze whether " + content + " is a positive or negative nuance and answer only with good or bad." + "\" }] }";
+
+        RequestBody body = RequestBody.create(jsonContent, mediaType);
+        Request request = new Request.Builder()
+                .url("https://api.openai.com/v1/chat/completions")
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Bearer " + staticApiKey)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.body() != null) {
+                String responseBody = response.body().string();
+                System.out.println(responseBody);
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(responseBody);
+
+                // 부정적인 내용 감지 로직은 실제 응답 내용과 요구사항에 따라 다를 수 있습니다.
+                // 여기서는 응답 내용에 "negative"나 "bad"와 같은 단어가 포함되어 있는지 간단히 확인합니다.
+                String responseContent = jsonNode.at("/choices/0/message/content").asText().toLowerCase();
+                if (responseContent.contains("bad")) {
+                    return "bad";
+                } else if (responseContent.contains("good")){
+                    return "good";
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "no answer"; // 응답이 없거나 예외가 발생한 경우
     }
 }
