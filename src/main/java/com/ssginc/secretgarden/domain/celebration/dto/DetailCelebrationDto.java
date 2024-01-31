@@ -1,5 +1,6 @@
 package com.ssginc.secretgarden.domain.celebration.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ssginc.secretgarden.domain.celebration.entity.Celebration;
 import lombok.*;
 
@@ -19,6 +20,7 @@ public class DetailCelebrationDto {
     private String content;
     private String category;
     private String imageUrl;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime createdAt;
 
     private List<DetailCommentDto> commentList;

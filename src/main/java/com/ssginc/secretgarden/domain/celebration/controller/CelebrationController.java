@@ -42,6 +42,7 @@ public class CelebrationController {
 
         List<ListDetailCelebrationDto> allCelebrations = findCelebrations.stream()
                 .map(ListDetailCelebrationDto::toDto)
+                .sorted(Comparator.comparing(ListDetailCelebrationDto::getId).reversed())
                 .toList();
 
         return ListResponseDto.builder()
@@ -58,6 +59,7 @@ public class CelebrationController {
         List<ListDetailCelebrationDto> dailyCelebrations = findCelebrations.stream()
                 .filter(c -> "daily".equals(c.getCategory()))
                 .map(ListDetailCelebrationDto::toDto)
+                .sorted(Comparator.comparing(ListDetailCelebrationDto::getId).reversed())
                 .toList();
 
         return ListResponseDto.builder()
@@ -74,6 +76,7 @@ public class CelebrationController {
         List<ListDetailCelebrationDto> anniversaryCelebrations = findCelebrations.stream()
                 .filter(c -> "anniversary".equals(c.getCategory()))
                 .map(ListDetailCelebrationDto::toDto)
+                .sorted(Comparator.comparing(ListDetailCelebrationDto::getId).reversed())
                 .toList();
 
         return ListResponseDto.builder()
@@ -91,6 +94,7 @@ public class CelebrationController {
                 .sorted(Comparator.comparing(Celebration::getId).reversed()) // id 기준으로 내림차순 정렬
                 .limit(3)
                 .map(ListDetailCelebrationDto::toDto)
+                .sorted(Comparator.comparing(ListDetailCelebrationDto::getId).reversed())
                 .toList();
 
         return ListResponseDto.builder()
