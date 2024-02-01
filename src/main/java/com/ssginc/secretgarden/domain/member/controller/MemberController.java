@@ -127,4 +127,8 @@ public class MemberController {
         return new ResponseEntity<>(celebrationListResponse, HttpStatus.OK);
     }
 
+    @DeleteMapping("/{memberId}")
+    public void deleteMember(@PathVariable("memberId") Integer memberId){
+        memberService.deleteMember(memberId);
+    }
 }
