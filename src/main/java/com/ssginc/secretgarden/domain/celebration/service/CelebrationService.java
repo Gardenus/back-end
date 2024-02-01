@@ -6,6 +6,7 @@ import com.ssginc.secretgarden.domain.celebration.entity.Celebration;
 import com.ssginc.secretgarden.domain.celebration.repository.CelebrationRepository;
 import com.ssginc.secretgarden.domain.member.entity.Member;
 import com.ssginc.secretgarden.domain.member.repository.MemberRepository;
+import com.ssginc.secretgarden.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class CelebrationService {
 
     private final CelebrationRepository celebrationRepository;
     private final MemberRepository memberRepository;
+    private final S3Uploader s3Uploader;
 
     // 축하 게시글 작성
     public Integer createCelebration(CelebrationRequestDto dto, Integer memberId) throws IOException {
@@ -30,7 +33,12 @@ public class CelebrationService {
         String nickname = "";
         if (dto.getIsSecret()) nickname = Custom.createRandomNickname();
         else nickname = memberRepository.findById(memberId).get().getName(); 
-            
+
+        String gptImageUrl = Custom.createImageByGPT("daily", dto.getContent());
+        String keyName = "gpt-image/"+UUID.randomUUID().toString() + ".png";
+        s3Uploader.uploadImageToS3(gptImageUrl,"secretgarden-bucket",keyName);
+        String s3Url = "https://secretgarden-bucket.s3.ap-northeast-2.amazonaws.com/" + keyName;
+        System.out.println(s3Url);
         Celebration celebration = Celebration.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
@@ -38,7 +46,7 @@ public class CelebrationService {
                 .nickname(nickname)
                 .category("daily")
                 .member(memberRepository.findById(memberId).get())
-                .imageUrl(Custom.createImageByGPT("daily", dto.getContent()))
+                .imageUrl(s3Url)
                 .build();
 
         return celebrationRepository.save(celebration).getId();
