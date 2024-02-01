@@ -38,7 +38,6 @@ public class CelebrationService {
         String keyName = "gpt-image/"+UUID.randomUUID().toString() + ".png";
         s3Uploader.uploadImageToS3(gptImageUrl,"secretgarden-bucket",keyName);
         String s3Url = "https://secretgarden-bucket.s3.ap-northeast-2.amazonaws.com/" + keyName;
-        System.out.println(s3Url);
         Celebration celebration = Celebration.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
@@ -58,10 +57,16 @@ public class CelebrationService {
 
         List<Member> birthdayMembers
                 = memberRepository.findByMonthAndDay(today.getMonthValue(), today.getDayOfMonth());
+
+
         
         for (Member member : birthdayMembers) {
             if (!member.getBlossomId().equals("admin")){
                 String content = "오늘은 " + member.getName() + "님의 생일입니다~~" + "모두 함께 축하해주세요~~!!";
+                String gptImageUrl = Custom.createImageByGPT("anniversary", content);
+                String keyName = "gpt-image/"+UUID.randomUUID().toString() + ".png";
+                s3Uploader.uploadImageToS3(gptImageUrl,"secretgarden-bucket",keyName);
+                String s3Url = "https://secretgarden-bucket.s3.ap-northeast-2.amazonaws.com/" + keyName;
                 Celebration celebration = Celebration.builder()
                         .title(member.getName() + " 님의 생일을 축하합니다!")
                         .content(content)
@@ -69,7 +74,7 @@ public class CelebrationService {
                         .nickname("신세계")
                         .category("anniversary")
                         .member(memberRepository.findByBlossomId("admin"))
-                        .imageUrl(Custom.createImageByGPT("anniversary", content))
+                        .imageUrl(s3Url)
                         .createdAt(LocalDateTime.now())
                         .build();
                 celebrationRepository.save(celebration);
@@ -77,7 +82,7 @@ public class CelebrationService {
         }
     }
 
-    @Scheduled(cron = "0 0 6 * * *") // 매일 06시 00분에 자동 실행
+    @Scheduled(cron = "0 21 10 * * *") // 매일 06시 00분에 자동 실행
     public void scheduleBirthdayCelebrations() throws IOException{
         createCelebrationByBirthDate();
     }
