@@ -48,7 +48,7 @@ public class CelebrationService {
                 .imageUrl(s3Url)
                 .build();
 
-
+        System.out.println(dto.getContent().replace("\n", " "));
         return celebrationRepository.save(celebration).getId();
     }
 
