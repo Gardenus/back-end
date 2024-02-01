@@ -10,4 +10,5 @@ public class CelebrationResponse {
     private Integer celebrationId;
     private String title;
     private String nickname;
+    private String imageUrl;
 }
