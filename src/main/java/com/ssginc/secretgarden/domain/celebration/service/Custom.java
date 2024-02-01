@@ -60,10 +60,10 @@ public class Custom {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = null;
         if (category.equals("anniversary")){
-            body = RequestBody.Companion.create("{\"model\": \"dall-e-3\", \"prompt\": \" 생일을 축하해주는 이미지를 생성해줘.\", \"n\": 1, \"size\": \"1024x1024\"}", mediaType);
+            body = RequestBody.Companion.create("{\"model\": \"dall-e-3\", \"prompt\": \" 생일을 축하해주는 이미지를 생성해주세요.\", \"n\": 1, \"size\": \"1024x1024\"}", mediaType);
         } else if (category.equals("daily")){
             // String prompt = "Create an image of cute animal celebrating that " + content + ".";
-            String prompt = content + "앞의 내용을 축하해주는 이미지를 생성해줘.";
+            String prompt = content + ". 앞의 내용을 축하해주는 이미지를 생성해주세요.";
             body = RequestBody.Companion.create("{\"model\": \"dall-e-3\", \"prompt\": \"" + prompt + "\", \"n\": 1, \"size\": \"1024x1024\"}", mediaType);
         }
         Request request = new Request.Builder()
