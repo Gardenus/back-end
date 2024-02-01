@@ -32,6 +32,8 @@ public class CelebrationService {
 
         System.out.println("dto content : " + dto.getContent());
 
+        String originalContent = dto.getContent();
+
         Celebration celebration = Celebration.builder()
                 .content(dto.getContent().replace("\n", " "))
                 .build();
@@ -49,6 +51,7 @@ public class CelebrationService {
         String s3Url = "https://secretgarden-bucket.s3.ap-northeast-2.amazonaws.com/" + keyName;
 
         savedCelebration.setTitle(dto.getTitle());
+        savedCelebration.setContent(originalContent);
         savedCelebration.setIsSecret(dto.getIsSecret());
         savedCelebration.setNickname(nickname);
         savedCelebration.setCategory("daily");
