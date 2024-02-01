@@ -39,7 +39,7 @@ public class CelebrationService {
         if (dto.getIsSecret()) nickname = Custom.createRandomNickname();
         else nickname = memberRepository.findById(memberId).get().getName(); 
 
-        String gptImageUrl = Custom.createImageByGPT("daily", dto.getContent());
+        String gptImageUrl = Custom.createImageByGPT("daily", savedCelebration.getContent());
         String keyName = "gpt-image/"+UUID.randomUUID().toString() + ".png";
         s3Uploader.uploadImageToS3(gptImageUrl,"secretgarden-bucket",keyName);
         String s3Url = "https://secretgarden-bucket.s3.ap-northeast-2.amazonaws.com/" + keyName;
