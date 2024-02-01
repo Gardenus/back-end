@@ -50,4 +50,8 @@ public class MemberService {
     public Member getMemberByBlossomId(String blossom) {
         return memberRepository.findByBlossomId(blossom);
     }
+
+    public void deleteMember(Integer memberId){
+        memberRepository.deleteById(memberId);
+    }
 }
