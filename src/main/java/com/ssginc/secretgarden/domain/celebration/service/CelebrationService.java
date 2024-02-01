@@ -30,6 +30,8 @@ public class CelebrationService {
     // 축하 게시글 작성
     public Integer createCelebration(CelebrationRequestDto dto, Integer memberId) throws IOException {
 
+        System.out.println(dto.getContent());
+
         Celebration celebration = Celebration.builder()
                         .content(dto.getContent())
                         .build();
