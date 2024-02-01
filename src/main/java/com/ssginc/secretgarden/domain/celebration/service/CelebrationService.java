@@ -30,6 +30,11 @@ public class CelebrationService {
     // 축하 게시글 작성
     public Integer createCelebration(CelebrationRequestDto dto, Integer memberId) throws IOException {
 
+        Celebration celebration = Celebration.builder()
+                        .content(dto.getContent())
+                        .build();
+        Celebration savedCelebration = celebrationRepository.save(celebration);
+
         String nickname = "";
         if (dto.getIsSecret()) nickname = Custom.createRandomNickname();
         else nickname = memberRepository.findById(memberId).get().getName(); 
@@ -38,17 +43,15 @@ public class CelebrationService {
         String keyName = "gpt-image/"+UUID.randomUUID().toString() + ".png";
         s3Uploader.uploadImageToS3(gptImageUrl,"secretgarden-bucket",keyName);
         String s3Url = "https://secretgarden-bucket.s3.ap-northeast-2.amazonaws.com/" + keyName;
-        Celebration celebration = Celebration.builder()
-                .title(dto.getTitle())
-                .content(dto.getContent())
-                .isSecret(dto.getIsSecret())
-                .nickname(nickname)
-                .category("daily")
-                .member(memberRepository.findById(memberId).get())
-                .imageUrl(s3Url)
-                .build();
 
-        return celebrationRepository.save(celebration).getId();
+        savedCelebration.setTitle(dto.getTitle());
+        savedCelebration.setIsSecret(dto.getIsSecret());
+        savedCelebration.setNickname(nickname);
+        savedCelebration.setCategory("daily");
+        savedCelebration.setMember(memberRepository.findById(memberId).get());
+        savedCelebration.setImageUrl(s3Url);
+
+        return savedCelebration.getId();
     }
 
     // 축하 게시글 자동 작성 (오늘의 기념일)
@@ -58,8 +61,6 @@ public class CelebrationService {
         List<Member> birthdayMembers
                 = memberRepository.findByMonthAndDay(today.getMonthValue(), today.getDayOfMonth());
 
-
-        
         for (Member member : birthdayMembers) {
             if (!member.getBlossomId().equals("admin")){
                 String content = "오늘은 " + member.getName() + "님의 생일입니다~~" + "모두 함께 축하해주세요~~!!";
