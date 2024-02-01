@@ -119,6 +119,7 @@ public class MemberController {
                                     .title(celebration.getTitle())
                                     .nickname(celebration.getNickname())
                                     .category(celebration.getCategory())
+                                    .imageUrl(celebration.getImageUrl())
                                     .build();
                         }
                 ).collect(Collectors.toList());

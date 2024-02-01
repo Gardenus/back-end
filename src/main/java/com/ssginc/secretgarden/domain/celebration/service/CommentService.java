@@ -67,19 +67,19 @@ public class CommentService {
     }
 
     // 이 달의 축하 계열사
-    public List<CelebrationRankingDto> findTopCommentersLastMonth() {
+    public List<CelebrationRankingDto> findTopCommentersThisMonth() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startOfLastMonth = now.minusMonths(1).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
-        LocalDateTime endOfLastMonth = startOfLastMonth.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
+        LocalDateTime startOfThisMonth = now.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime endOfThisMonth = now.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
 
         /*// 오늘 날짜를 2월 1일로 고정합니다.
         LocalDate fixedToday = LocalDate.of(2024, 2, 1); // 예시 날짜, 실제 테스트 날짜로 변경해주세요.
-        // 고정된 오늘 날짜를 기반으로 지난 달의 시작과 끝을 계산합니다.
-        YearMonth lastMonth = YearMonth.from(fixedToday).minusMonths(1);
-        LocalDateTime startOfLastMonth = lastMonth.atDay(1).atStartOfDay();
-        LocalDateTime endOfLastMonth = lastMonth.atEndOfMonth().atTime(23, 59, 59);*/
+        // 고정된 오늘 날짜를 기반으로 현재 달의 시작과 끝을 계산합니다.
+        YearMonth currentMonth = YearMonth.from(fixedToday);
+        LocalDateTime startOfThisMonth = currentMonth.atDay(1).atStartOfDay();
+        LocalDateTime endOfThisMonth = currentMonth.atEndOfMonth().atTime(23, 59, 59);*/
 
-        List<Object[]> results = commentRepository.findTopCommentingCompaniesByDateRange(startOfLastMonth, endOfLastMonth);
+        List<Object[]> results = commentRepository.findTopCommentingCompaniesByDateRange(startOfThisMonth, endOfThisMonth);
 
         // 상위 3개의 결과만 처리
         AtomicInteger rank = new AtomicInteger(1); // 순위 1부터 시작

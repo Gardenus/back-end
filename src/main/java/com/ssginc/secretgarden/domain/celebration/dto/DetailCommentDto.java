@@ -15,6 +15,7 @@ public class DetailCommentDto {
     private Integer id;
     private String content;
     private String nickname;
+    private Integer writerId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime createdAt;
 
@@ -23,6 +24,7 @@ public class DetailCommentDto {
                 .id(comment.getId())
                 .content(comment.getContent())
                 .nickname(comment.getNickname())
+                .writerId(comment.getMember().getId())
                 .createdAt(comment.getCreatedAt())
                 .build();
     }

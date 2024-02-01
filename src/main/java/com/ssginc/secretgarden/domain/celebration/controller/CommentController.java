@@ -33,9 +33,10 @@ public class CommentController {
         commentService.deleteComment(commentId);
     }
 
+    // 이 달의 축하 계열사
     @GetMapping("celebration/ranking")
     public RankingResponseDto getCelebrationRanking(){
-        List<CelebrationRankingDto> rankingDtoList = commentService.findTopCommentersLastMonth();
+        List<CelebrationRankingDto> rankingDtoList = commentService.findTopCommentersThisMonth();
 
         return RankingResponseDto.builder()
                 .rankingList(rankingDtoList)
