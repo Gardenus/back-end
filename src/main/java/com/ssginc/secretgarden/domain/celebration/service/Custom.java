@@ -5,9 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.sql.SQLOutput;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +22,10 @@ import java.util.concurrent.TimeUnit;
 public class Custom {
 
     private static String staticApiKey;
+    private static String sessionID = generateSessionID();
+    private static LocalDate sessionDate = LocalDate.now();
+
+    public static String previousAnswer = "항상 긍정적인 에너지를 전파하는 동료";
 
     @Value("${openai.api.key}")
     private String apiKey;
@@ -127,6 +136,55 @@ public class Custom {
                 } else if (responseContent.contains("good")){
                     return "good";
                 }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "no answer"; // 응답이 없거나 예외가 발생한 경우
+    }
+
+    private static String generateSessionID() {
+        // 세션 ID를 생성하는 로직을 구현합니다. 예를 들어, 현재 날짜를 기반으로 할 수 있습니다.
+        return LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+    }
+
+    @Scheduled(cron = "0 0 9 * * *") // 매일 09시 00분에 자동 실행
+    public void scheduleDailyChallenge() throws IOException{
+        previousAnswer = Custom.getChallengeByGPT();
+    }
+
+    public static String getChallengeByGPT(){
+
+        String sameDateFlag = String.valueOf(LocalDate.now().isEqual(sessionDate));
+        System.out.println(sameDateFlag);
+        System.out.println("previousAnswer : " + previousAnswer);
+
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        String prompt = "동료를 칭찬하는 칭찬 주제 1가지를 추천해주세요. 주제는 '~한 동료'와 같은 형식으로 끝나도록. 업무 관련 말고도 일상적이고 재밌고 유쾌한 주제도 좋습니다. 주제 길이가 너무 길지 않도록 부탁드립니다.";
+        System.out.println(prompt);
+        String jsonContent = "{ \"model\": \"gpt-4\", \"messages\": [{ \"role\": \"system\", \"content\": \"You are a helpful assistant.\" }, { \"role\": \"user\", \"content\": \"" + prompt + "\" }] }";
+
+        RequestBody body = RequestBody.create(jsonContent, mediaType);
+        Request request = new Request.Builder()
+                .url("https://api.openai.com/v1/chat/completions")
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Bearer " + staticApiKey)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.body() != null) {
+                String responseBody = response.body().string();
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(responseBody);
+                String responseContent = jsonNode.at("/choices/0/message/content").asText();
+                return responseContent;
             }
         } catch (IOException e) {
             e.printStackTrace();
