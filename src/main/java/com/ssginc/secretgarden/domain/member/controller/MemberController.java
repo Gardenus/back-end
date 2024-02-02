@@ -2,6 +2,7 @@ package com.ssginc.secretgarden.domain.member.controller;
 
 import com.ssginc.secretgarden.domain.celebration.entity.Celebration;
 import com.ssginc.secretgarden.domain.celebration.service.CelebrationService;
+import com.ssginc.secretgarden.domain.celebration.service.Custom;
 import com.ssginc.secretgarden.domain.compliment.dto.response.ComplimentListResponse;
 import com.ssginc.secretgarden.domain.compliment.entity.Compliment;
 import com.ssginc.secretgarden.domain.compliment.service.ComplimentService;
@@ -77,13 +78,23 @@ public class MemberController {
         List<Compliment> complimentList = complimentService.getReceivedCompliment(memberId);
         Member member = memberService.getMemberByMemberId(memberId);
         List<ComplimentResponse> response = complimentList.stream()
-                .map(compliment -> ComplimentResponse.builder()
-                        .complimentId(compliment.getId())
-                        .category(compliment.getCategory())
-                        .content(compliment.getContent())
-                        .name(member.getName())
-                        .companyName(member.getCompany().getName())
-                        .build()).collect(Collectors.toList());
+                .map(compliment ->
+                    {
+                        String theme = "";
+                        if (compliment.getCategory().equals("challenge")) theme = Custom.previousAnswer;
+                        else theme = "none";
+
+                        return ComplimentResponse.builder()
+                                .complimentId(compliment.getId())
+                                .category(compliment.getCategory())
+                                .theme(theme)
+                                .content(compliment.getContent())
+                                .theme(theme)
+                                .name(member.getName())
+                                .companyName(member.getCompany().getName())
+                                .build();
+                    }
+                ).collect(Collectors.toList());
         ComplimentListResponse complimentListResponse = new ComplimentListResponse(response);
         return new ResponseEntity<>(complimentListResponse, HttpStatus.OK);
     }
@@ -95,9 +106,14 @@ public class MemberController {
                 .map(compliment ->
                         {
                             Member member = memberService.getMemberByMemberId(compliment.getReceiverId());
+                            String theme = "";
+                            if (compliment.getCategory().equals("challenge")) theme = Custom.previousAnswer;
+                            else theme = "none";
+
                             return ComplimentResponse.builder()
                                     .complimentId(compliment.getId())
                                     .category(compliment.getCategory())
+                                    .theme(theme)
                                     .content(compliment.getContent())
                                     .name(member.getName())
                                     .companyName(member.getCompany().getName())
