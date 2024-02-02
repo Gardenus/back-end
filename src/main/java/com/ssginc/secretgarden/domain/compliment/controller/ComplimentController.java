@@ -1,5 +1,6 @@
 package com.ssginc.secretgarden.domain.compliment.controller;
 
+import com.ssginc.secretgarden.domain.celebration.service.Custom;
 import com.ssginc.secretgarden.domain.compliment.dto.ComplimentRankingDto;
 import com.ssginc.secretgarden.domain.compliment.dto.CreateComplimentDto;
 import com.ssginc.secretgarden.domain.compliment.dto.TodayChallengeDto;
@@ -63,10 +64,15 @@ public class ComplimentController {
                 .map(compliment ->
                         {
                             Member member = memberService.getMemberByMemberId(compliment.getReceiverId());
+                            String theme = "";
+                            if (compliment.getCategory().equals("challenge")) theme = Custom.previousAnswer;
+                            else theme = "none";
+
                             return ComplimentResponse.builder()
                                     .complimentId(compliment.getId())
                                     .category(compliment.getCategory())
                                     .content(compliment.getContent())
+                                    .theme(theme)
                                     .name(member.getName())
                                     .companyName(member.getCompany().getName())
                                     .build();
@@ -85,6 +91,7 @@ public class ComplimentController {
                             return ComplimentResponse.builder()
                                     .complimentId(compliment.getId())
                                     .category(compliment.getCategory())
+                                    .theme("none")
                                     .content(compliment.getContent())
                                     .name(member.getName())
                                     .companyName(member.getCompany().getName())
@@ -105,6 +112,7 @@ public class ComplimentController {
                             return ComplimentResponse.builder()
                                     .complimentId(compliment.getId())
                                     .category(compliment.getCategory())
+                                    .theme("none")
                                     .content(compliment.getContent())
                                     .name(member.getName())
                                     .companyName(member.getCompany().getName())
@@ -125,6 +133,7 @@ public class ComplimentController {
                             return ComplimentResponse.builder()
                                     .complimentId(compliment.getId())
                                     .category(compliment.getCategory())
+                                    .theme(Custom.previousAnswer)
                                     .content(compliment.getContent())
                                     .name(member.getName())
                                     .companyName(member.getCompany().getName())

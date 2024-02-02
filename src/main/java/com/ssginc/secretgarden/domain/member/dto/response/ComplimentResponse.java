@@ -8,6 +8,7 @@ import lombok.Data;
 public class ComplimentResponse {
     private Integer complimentId;
     private String category;
+    private String theme;
     private String name;
     private String companyName;
     private String content;
