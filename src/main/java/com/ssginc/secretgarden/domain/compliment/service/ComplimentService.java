@@ -57,14 +57,8 @@ public class ComplimentService {
                 .build();
         Compliment savedCompliment = complimentRepository.save(compliment);
 
-        String answer = Custom.filterCommentByGPT(writeComplimentRequest.getContent());
+        String answer = Custom.filterCommentByGPT(savedCompliment.getContent());
         if (answer.equals("good")) { // answer 이 "good"인 경우
-            /*Compliment compliment = Compliment.builder()
-                    .member(writer)
-                    .receiverId(receiver.getId())
-                    .category(writeComplimentRequest.getCategory())
-                    .content(writeComplimentRequest.getContent())
-                    .build();*/
             savedCompliment.setMember(writer);
             savedCompliment.setReceiverId(receiver.getId());
             savedCompliment.setCategory(writeComplimentRequest.getCategory());
