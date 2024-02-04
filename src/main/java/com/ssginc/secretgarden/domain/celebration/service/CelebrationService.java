@@ -80,7 +80,7 @@ public class CelebrationService {
                 Celebration celebration = Celebration.builder()
                         .title(member.getName() + " 님의 생일을 축하합니다!")
                         .content(content)
-                        .isSecret(false)
+                        .isSecret(true)
                         .nickname("신세계")
                         .category("anniversary")
                         .member(memberRepository.findByBlossomId("admin"))
@@ -92,7 +92,7 @@ public class CelebrationService {
         }
     }
 
-    @Scheduled(cron = "0 45 13 * * *") // 매일 06시 00분에 자동 실행
+    @Scheduled(cron = "0 33 14 * * *") // 매일 06시 00분에 자동 실행
     public void scheduleBirthdayCelebrations() throws IOException{
         createCelebrationByBirthDate();
     }
