@@ -10,5 +10,6 @@ public class CelebrationRequestDto {
 
     private String title;
     private String content;
+    private String category;
     private Boolean isSecret;
 }
