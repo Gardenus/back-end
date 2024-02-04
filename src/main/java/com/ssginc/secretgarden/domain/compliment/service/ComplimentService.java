@@ -50,17 +50,28 @@ public class ComplimentService {
         Member receiver = memberRepository.findFirstByNameOrderByIdAsc(writeComplimentRequest.getName())
                 .orElseThrow(() -> new MemberNotFoundException("칭찬 대상자가 존재하지 않습니다."));
 
+        String originalContent = writeComplimentRequest.getContent();
+
+        Compliment compliment = Compliment.builder()
+                .content(writeComplimentRequest.getContent().replace("\n", " "))
+                .build();
+        Compliment savedCompliment = complimentRepository.save(compliment);
+
         String answer = Custom.filterCommentByGPT(writeComplimentRequest.getContent());
         if (answer.equals("good")) { // answer 이 "good"인 경우
-            Compliment compliment = Compliment.builder()
+            /*Compliment compliment = Compliment.builder()
                     .member(writer)
                     .receiverId(receiver.getId())
                     .category(writeComplimentRequest.getCategory())
                     .content(writeComplimentRequest.getContent())
-                    .build();
+                    .build();*/
+            savedCompliment.setMember(writer);
+            savedCompliment.setReceiverId(receiver.getId());
+            savedCompliment.setCategory(writeComplimentRequest.getCategory());
+            savedCompliment.setContent(originalContent);
 
             return CreateComplimentDto.builder()
-                    .id(complimentRepository.save(compliment).getId())
+                    .id(savedCompliment.getId())
                     .answer(answer)
                     .build();
         }
