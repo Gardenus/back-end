@@ -92,7 +92,7 @@ public class CelebrationService {
         }
     }
 
-    @Scheduled(cron = "0 35 13 * * *") // 매일 06시 00분에 자동 실행
+    @Scheduled(cron = "0 45 13 * * *") // 매일 06시 00분에 자동 실행
     public void scheduleBirthdayCelebrations() throws IOException{
         createCelebrationByBirthDate();
     }
