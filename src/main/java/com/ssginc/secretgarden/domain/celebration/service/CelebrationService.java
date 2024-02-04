@@ -45,7 +45,7 @@ public class CelebrationService {
         if (dto.getIsSecret()) nickname = Custom.createRandomNickname();
         else nickname = memberRepository.findById(memberId).get().getName();
 
-        String gptImageUrl = Custom.createImageByGPT("daily", savedCelebration.getContent());
+        String gptImageUrl = Custom.createImageByGPT(dto.getCategory(), savedCelebration.getContent(), false);
         String keyName = "gpt-image/"+UUID.randomUUID().toString() + ".png";
         s3Uploader.uploadImageToS3(gptImageUrl,"secretgarden-bucket",keyName);
         String s3Url = "https://secretgarden-bucket.s3.ap-northeast-2.amazonaws.com/" + keyName;
@@ -54,7 +54,7 @@ public class CelebrationService {
         savedCelebration.setContent(originalContent);
         savedCelebration.setIsSecret(dto.getIsSecret());
         savedCelebration.setNickname(nickname);
-        savedCelebration.setCategory("daily");
+        savedCelebration.setCategory(dto.getCategory());
         savedCelebration.setMember(memberRepository.findById(memberId).get());
         savedCelebration.setImageUrl(s3Url);
 
@@ -72,8 +72,8 @@ public class CelebrationService {
 
         for (Member member : birthdayMembers) {
             if (!member.getBlossomId().equals("admin")){
-                String content = "오늘은 " + member.getName() + "님의 생일입니다~~" + "모두 함께 축하해주세요~~!!";
-                String gptImageUrl = Custom.createImageByGPT("anniversary", content);
+                String content = "오늘은 " + member.getName() + "님의 생일입니다. " + "모두 함께 축하해주세요~!!";
+                String gptImageUrl = Custom.createImageByGPT("anniversary", content, true);
                 String keyName = "gpt-image/"+UUID.randomUUID().toString() + ".png";
                 s3Uploader.uploadImageToS3(gptImageUrl,"secretgarden-bucket",keyName);
                 String s3Url = "https://secretgarden-bucket.s3.ap-northeast-2.amazonaws.com/" + keyName;

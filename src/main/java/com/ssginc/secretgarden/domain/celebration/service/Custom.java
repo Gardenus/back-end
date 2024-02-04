@@ -22,8 +22,6 @@ import java.util.concurrent.TimeUnit;
 public class Custom {
 
     private static String staticApiKey;
-    private static String sessionID = generateSessionID();
-    private static LocalDate sessionDate = LocalDate.now();
 
     public static String previousAnswer = "항상 긍정적인 에너지를 전파하는 동료";
 
@@ -58,7 +56,7 @@ public class Custom {
     }
 
     // GPT-4를 활용한 이미지 생성
-    public static String createImageByGPT(String category, String content) throws IOException {
+    public static String createImageByGPT(String category, String content, boolean isAuto) throws IOException {
 
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .connectTimeout(30, TimeUnit.SECONDS) // 연결 타임아웃 30초
@@ -68,10 +66,10 @@ public class Custom {
 
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = null;
-        if (category.equals("anniversary")){
+
+        if (isAuto){
             body = RequestBody.Companion.create("{\"model\": \"dall-e-3\", \"prompt\": \" 생일을 축하해주는 이미지를 생성해주세요.\", \"n\": 1, \"size\": \"1024x1024\"}", mediaType);
-        } else if (category.equals("daily")){
-            // String prompt = "Create an image of cute animal celebrating that " + content + ".";
+        } else {
             String prompt = content + ". 앞의 내용을 축하해주는 이미지를 생성해주세요.";
             body = RequestBody.Companion.create("{\"model\": \"dall-e-3\", \"prompt\": \"" + prompt + "\", \"n\": 1, \"size\": \"1024x1024\"}", mediaType);
         }
@@ -143,21 +141,12 @@ public class Custom {
         return "no answer"; // 응답이 없거나 예외가 발생한 경우
     }
 
-    private static String generateSessionID() {
-        // 세션 ID를 생성하는 로직을 구현합니다. 예를 들어, 현재 날짜를 기반으로 할 수 있습니다.
-        return LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
-    }
-
     @Scheduled(cron = "0 0 9 * * *") // 매일 09시 00분에 자동 실행
     public void scheduleDailyChallenge() throws IOException{
         previousAnswer = Custom.getChallengeByGPT();
     }
 
     public static String getChallengeByGPT(){
-
-        String sameDateFlag = String.valueOf(LocalDate.now().isEqual(sessionDate));
-        System.out.println(sameDateFlag);
-        System.out.println("previousAnswer : " + previousAnswer);
 
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .connectTimeout(30, TimeUnit.SECONDS)
