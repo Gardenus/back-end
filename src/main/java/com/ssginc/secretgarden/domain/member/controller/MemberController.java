@@ -92,6 +92,7 @@ public class MemberController {
                                 .theme(theme)
                                 .name(member.getName())
                                 .companyName(member.getCompany().getName())
+                                .imageUrl(member.getUrl())
                                 .build();
                     }
                 ).collect(Collectors.toList());
@@ -117,6 +118,7 @@ public class MemberController {
                                     .content(compliment.getContent())
                                     .name(member.getName())
                                     .companyName(member.getCompany().getName())
+                                    .imageUrl(member.getUrl())
                                     .build();
                         }
                 ).collect(Collectors.toList());

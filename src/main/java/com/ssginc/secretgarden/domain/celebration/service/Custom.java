@@ -68,9 +68,9 @@ public class Custom {
         RequestBody body = null;
 
         if (isAuto){
-            body = RequestBody.Companion.create("{\"model\": \"dall-e-3\", \"prompt\": \" 생일을 축하해주는 이미지를 생성해주세요.\", \"n\": 1, \"size\": \"1024x1024\"}", mediaType);
+            body = RequestBody.Companion.create("{\"model\": \"dall-e-3\", \"prompt\": \" 생일을 축하해주는 이미지를 생성해주세요. 단, 이미지에 텍스트나 숫자는 사용하지 말아주세요.\", \"n\": 1, \"size\": \"1024x1024\"}", mediaType);
         } else {
-            String prompt = content + ". 앞의 내용을 축하해주는 이미지를 생성해주세요.";
+            String prompt = content + ". 앞의 내용을 축하해주는 이미지를 생성해주세요. 단, 이미지에 텍스트나 숫자는 사용하지 말아주세요.";
             body = RequestBody.Companion.create("{\"model\": \"dall-e-3\", \"prompt\": \"" + prompt + "\", \"n\": 1, \"size\": \"1024x1024\"}", mediaType);
         }
         Request request = new Request.Builder()
