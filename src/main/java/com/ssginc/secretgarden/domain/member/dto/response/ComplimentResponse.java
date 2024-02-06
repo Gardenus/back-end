@@ -12,4 +12,5 @@ public class ComplimentResponse {
     private String name;
     private String companyName;
     private String content;
+    private String imageUrl;
 }

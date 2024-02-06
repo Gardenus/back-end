@@ -75,6 +75,7 @@ public class ComplimentController {
                                     .theme(theme)
                                     .name(member.getName())
                                     .companyName(member.getCompany().getName())
+                                    .imageUrl(member.getUrl())
                                     .build();
                         }
                 ).collect(Collectors.toList());
@@ -95,6 +96,7 @@ public class ComplimentController {
                                     .content(compliment.getContent())
                                     .name(member.getName())
                                     .companyName(member.getCompany().getName())
+                                    .imageUrl(member.getUrl())
                                     .build();
                         }
                 ).collect(Collectors.toList());
@@ -116,6 +118,7 @@ public class ComplimentController {
                                     .content(compliment.getContent())
                                     .name(member.getName())
                                     .companyName(member.getCompany().getName())
+                                    .imageUrl(member.getUrl())
                                     .build();
                         }
                 ).collect(Collectors.toList());
@@ -137,6 +140,7 @@ public class ComplimentController {
                                     .content(compliment.getContent())
                                     .name(member.getName())
                                     .companyName(member.getCompany().getName())
+                                    .imageUrl(member.getUrl())
                                     .build();
                         }
                 ).collect(Collectors.toList());
